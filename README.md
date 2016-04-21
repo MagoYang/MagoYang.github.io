@@ -191,3 +191,70 @@ int main()
 	return 0;
 }
 
+//冒泡排序  方法：1.数组 2.指针
+# include  <stdio.h>
+//# define N  10
+void bubbleSort(int arr[], int size)
+{
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < size - 1;i++)
+	for (j = 0; j < size - 1 - i; j++)
+	{
+		if (arr[j]>arr[j + 1])
+		{
+			int tmp = arr[j];
+			arr[j] = arr[j + 1];
+			arr[j + 1] = tmp;
+		}
+	}
+}
+	
+
+int main()
+{
+	int i=0;
+	int arr[] = { 9,8,7,6,5,4,3,2,1,0 };
+	int size = sizeof(arr) / sizeof(arr[0]);
+	 bubbleSort(arr,size);
+	 for (i = 0; i < size; i++)
+	 {
+		 printf(" %d ", arr[i]);
+	 }
+	system("pause");
+	return 0;
+}
+
+# include  <stdio.h>
+//# define N  10
+void bubbleSort(int* p, int size)
+{
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < size - 1; i++)
+	for (j = 0; j < size - 1 - i; j++)
+	{
+		if (*(p+j)>*(p+j+1))
+		{
+			int tmp = *(p + j);
+			*(p + j) = *(p + j + 1);
+			*(p + j + 1) = tmp;
+		}
+	}
+}
+
+
+int main()
+{
+	int i = 0;
+	int arr[] = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+	int size = sizeof(arr) / sizeof(arr[0]);
+	int *p = arr;                 //数组名指数组的起始位置
+	bubbleSort( p, size);
+	for (i = 0; i < size; i++)
+	{
+		printf(" %d ", *(p+i));
+	}
+	system("pause");
+	return 0;
+} 

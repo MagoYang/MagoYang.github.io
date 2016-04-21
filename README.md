@@ -76,3 +76,118 @@ int main()
 	return 0;
 }
 
+
+1.模拟实现strcmp 
+				/*C/C++函数，比较两个字符串.设这两个字符串为str1，str2，若str1 == str2，则返回零；若str1>str2，则返回正数；
+				若str1<str2，则返回负数。*/
+2.模拟实现memcpy  c和c++使用的内存拷贝函数，
+                memcpy函数的功能是从源src所指的内存地址的起始位置开始拷贝n个字节到目标dest所指的内存地址的起始位置中。
+//3.模拟实现memmove
+
+
+#include <stdio.h>
+#include <assert.h>
+int  my_strcmp(const char* str1,const char* str2) //字符串比较函数
+{
+	//assert(str1);
+	//assert(str2);
+	const char *s1 = str1;
+	const char *s2 = str2;
+	while (*s1||*s2 )
+
+	{
+		if (*s2 == '\0' || *s1 > *s2)
+		{
+			return 1;
+		}
+		else if (*s1 == '\0' || *s1 < *s2)
+		{
+			return -1;
+		}
+		else
+		{
+			return 0;
+		}
+		s1++;
+		s2++;
+	}
+		return 0;  // 是在两个字符串都为空时返回值 0
+}
+
+void* my_memcpy( void * dest,void *src,size_t n)//不相干内存
+{
+	assert(dest);
+	assert(src);
+	char * ret = dest;
+	char *pdest = (char *)dest;
+	char *psrc = (char *)src;
+	while (n-- > 0)
+	{
+		*pdest++ = *psrc++;
+	}
+	return ret;
+}
+
+void* my_memmove(void *dest,const void *src,size_t n)//相干不相干内存都可
+{
+	assert(dest);
+	assert(src);
+	char *pdest = (char *)dest;
+	char *psrc = (char *)src;
+	char *ret = dest;
+	if ((src < dest) && (pdest < psrc + n))   //内存重复时
+	{
+		pdest =  pdest + n - 1;
+		psrc =  psrc + n - 1;
+		while (n-->0)   
+		{
+			*pdest = *psrc;
+			pdest--;
+			psrc--;
+			//--pdest;  //都可以
+			//--psrc;
+		}
+
+
+	}
+	else
+	{
+		while (n-- > 0)
+		{
+			*pdest++ = *psrc++;
+		}
+	}
+		
+	return ret;
+}
+void Test1()
+{
+	char *str1 = "12345";
+	char *str2 = "456";
+	char *tmp = my_strcmp(str1, str2);
+	printf("%d\n", tmp);
+}
+void Test2()
+{
+	char * str1 = "abcdefg";
+	char arr[20];
+	memset(arr, 0, sizeof(arr));     //将内存设置初始化为0
+	char* tmp = my_memcpy(arr, str1, 5);
+	printf("%s\n", tmp);
+}
+void Test3()
+{
+	char str[] = "123456789";
+	my_memmove(str + 4, str + 3, 3);
+	puts(str);
+
+}
+int main()
+{
+	//Test1();
+	//Test2();
+	Test3();
+	system("pause");
+	return 0;
+}
+

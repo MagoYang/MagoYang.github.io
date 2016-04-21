@@ -1,22 +1,33 @@
 # MagoYang.github.io
 Mycode~博客
-# include <stdio.h>
-#define n 20
 
+//字符串连接函数 strcat
+//原型strcat(char[],const char[])
+#include <stdio.h>
+#include <assert.h>
+//void my_strcat(char strdest[], const char strsrc[]);
+char * my_strcat(char *strdest, const char *strsrc)
+{
+	assert(strdest);
+	assert(strsrc);
+	char *ret = strdest;
+	while (*strdest)
+	{
+		strdest++;
+	}
+	while (*strdest++ = *strsrc++)
+	{
+		;         //为了保证循环的继续 必须有！
+	}
+	return ret;
+}
 int main()
 {
-	int cur = n;  //当下共有的瓶子数
-	int count = n;//当下共喝的汽水瓶数
-		while (cur > 1)
-	 {
-		int x;
-		x = cur % 2;
-		count += cur / 2;
-		cur = cur / 2 + x;
-	}
-	
-	printf("总共喝汽水：%d\n", count);
+	char dest[20] = "this is ";
+	char src[] = "my_strcat";
+	my_strcat(dest, src);
+	printf("%s\n", dest);   //%s 输出一个字符串
 	system("pause");
 	return 0;
+
 }
-注：当钱数为0或1元时，会直接用printf函数输出原数，其他则会进入循环判断

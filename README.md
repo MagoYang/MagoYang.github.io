@@ -1,7 +1,7 @@
 # MagoYang.github.io
 Mycode~博客
 
-//字符串连接函数 strcat
+1.//字符串连接函数 strcat
 //原型strcat(char[],const char[])
 #include <stdio.h>
 #include <assert.h>
@@ -33,7 +33,7 @@ int main()
 }
 
 
-//strstr函数   思路：在字符串s1中查找s2的第一次出现的位置，否则返回null
+2.//strstr函数   思路：在字符串s1中查找s2的第一次出现的位置，否则返回null
 //原型 ： char *strstr(char *str1, const char *str2);
 # include <stdio.h>
 //#include <string.h>
@@ -77,12 +77,12 @@ int main()
 }
 
 
-1.模拟实现strcmp 
+3.模拟实现strcmp 
 				/*C/C++函数，比较两个字符串.设这两个字符串为str1，str2，若str1 == str2，则返回零；若str1>str2，则返回正数；
 				若str1<str2，则返回负数。*/
-2.模拟实现memcpy  c和c++使用的内存拷贝函数，
+4.模拟实现memcpy  c和c++使用的内存拷贝函数，
                 memcpy函数的功能是从源src所指的内存地址的起始位置开始拷贝n个字节到目标dest所指的内存地址的起始位置中。
-//3.模拟实现memmove
+//5.模拟实现memmove
 
 
 #include <stdio.h>
@@ -191,7 +191,7 @@ int main()
 	return 0;
 }
 
-//冒泡排序  方法：1.数组 2.指针
+7.冒泡排序  方法：1.数组 2.指针
 # include  <stdio.h>
 //# define N  10
 void bubbleSort(int arr[], int size)
@@ -225,7 +225,7 @@ int main()
 	return 0;
 }
 
-# include  <stdio.h>
+8.# include  <stdio.h>
 //# define N  10
 void bubbleSort(int* p, int size)
 {
@@ -258,3 +258,28 @@ int main()
 	system("pause");
 	return 0;
 } 
+9.实现一个函数，可以左旋字符串中的k个字符。
+AABCD左旋一个字符得到ABCDA
+AABCD左旋两个字符得到BCDAA
+# include <stdio.h>
+# include <assert.h>
+# include <string.h>
+char * LeftHand(char *str1, char * str2, int k)  //开辟一个新空间str2，先存入k+1后的部分，再存k之前的部分
+{
+	assert(str1);
+	assert(str2);
+	char*ret = str2;
+	char * s1 = str1 + k;  //  从k+1的位置开始将其后面部分存入str2；
+	while (*s1)
+	{
+		*str2++ = *s1++;
+	}
+	s1 = str1;    //存完后将指针s1调至str1开始，逆转存剩余部分
+	while (k)
+	{
+		*str2++ = *s1++;
+		k--;
+	}
+	*str2 = '\0';//将str2的末尾给字符‘\0’
+	return ret;
+}

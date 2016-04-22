@@ -283,3 +283,102 @@ char * LeftHand(char *str1, char * str2, int k)  //开辟一个新空间str2，�
 	*str2 = '\0';//将str2的末尾给字符‘\0’
 	return ret;
 }
+
+10.模拟实现strchr和strrchr
+# include <stdio.h>
+ char *my_strchr(const char *str, char ch)
+{
+	if (*str)
+	{
+		while (*str != '\0'&&*str != ch)
+		{
+			++str;      //str++;
+		}
+		return *str == ch ? str : null;
+	}
+	else
+		return null;
+
+}
+int  my_strchr(const char *str, int ch)
+{
+	int count = 1;
+	if (*str)
+	{
+		while (*str != '\0'&&*str != ch)
+		{
+			++str; //str++;
+			++count;//count++;
+		}
+		return *str == ch ? count : null;
+	}
+	else
+		return null;
+
+}
+char* my_strrchr(const char *str, char ch)
+{
+	const char *ptr = null;
+	
+	while (*str != ch)
+	{
+		++str;
+		if (*str == ch&&*str!='\0')
+		{
+			ptr = str;
+			++str;
+		}
+		else if (*str == '\0')
+		{
+			return  ptr;
+		}
+	}
+	
+}
+
+test1()
+{
+	char arr[] = "welcome to this world!";
+	int ret = my_strchr(arr, 'o');
+	printf("ret=%d", ret);
+}
+test2()
+{
+	char arr[] = "welcome to this world!";
+	char* ret = my_strrchr(arr, 'o');
+	printf("ret=%s", ret);
+}
+int main()
+{
+	//test1();
+	test2();
+	system("pause");
+	return 0;
+}
+
+11.模拟实现strrstr
+# include <stdio.h>
+char *my_strrstr(const char *s1, const char *s2)
+{
+	char *last = NULL;
+	char *current = NULL;
+	if (*s2)  //只有在s2不为空时才查找，若s2为空，返回NULL
+	{
+		current = strstr(s1, s2);  //查找s2在s1中第一次出现的位置
+		while (current != NULL)
+		{
+			last = current;
+			current = strstr(last + 1, s2);
+		}
+	}
+	return last;
+}
+int main()
+{
+	char *str1 = "abcdefabcdef";
+	char *str2 = "bcd";
+	char * ret = my_strrstr(str1, str2);
+	printf("ret=%s", ret);
+	system("pause");
+	return 0;
+}

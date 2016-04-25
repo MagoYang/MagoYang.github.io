@@ -568,3 +568,209 @@ void Erase(SListNode *& pHead,SListNode * pos)
 	}
 
 }
+13.单链表有关题目
+///////////1.删除一个无头单链表的非尾节点////////////////
+void DelNoTailNode(SListNode * pos)
+{
+	assert(pos);
+	assert(pos->next);
+	SListNode* del = pos->next;
+	SListNode* next = del->next;
+	pos->data = del->data;
+	pos->next = next;
+	free(del);
+}
+
+///////////2.在无头单链表的非头结点前面插入一个节点///////
+void InsertNFNode(SListNode* pos,DataType x)
+{
+	assert(pos);
+	SListNode* tmp = CreateNode(x);
+	tmp->next = pos->next;
+	pos->next = tmp;
+	DataType curdata = pos->data;
+	pos->data = tmp->data;
+	tmp->data = curdata;
+
+}
+
+////////////3.查找单链表的中间节点，要求只遍历一遍////////////
+SListNode* FindMidNode(SListNode*& pHead)
+{
+	SListNode *slow = pHead;
+	SListNode*fast = pHead;
+	while (fast&&fast->next)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+	return  slow;
+}
+
+//////////////4.查找单链表的倒数第k个节点，要求只遍历一次////////
+SListNode * FindKNode(SListNode *&pHead,int k)
+{
+	SListNode* slow = pHead;
+	SListNode* fast = pHead;
+	while (fast&& k--)
+	{
+		fast = fast->next;
+		if (fast == NULL)
+		{
+			return NULL;
+		}
+	}
+	while(fast)
+	{
+		slow = slow->next;
+		fast = fast->next;
+	}
+	return slow;
+}
+
+////////////////5.从尾到头打印单链表////////////////////////
+void PrintTTHList(SListNode *& pHead)
+{
+	if (pHead == NULL)
+	{
+		return ;
+	}
+	else
+	{
+		PrintTTHList(pHead->next);
+		printf("%d-", pHead->data);
+		
+	}
+}
+
+/////////////////6.逆置单链表/////////////////////////////////
+SListNode* Reverse(SListNode *&pHead)
+{
+	SListNode* cur = pHead;
+	SListNode* newhead = NULL;
+	while (cur)
+	{
+		SListNode* tmp = cur;
+		cur = cur->next;
+		tmp->next = newhead;
+		newhead = tmp;
+	}
+	return newhead;
+}
+
+void Test1()
+{
+	SListNode*SList = NULL;
+	PushBack(SList, 1);
+	PushBack(SList, 2);
+	PushBack(SList, 3);
+	PushBack(SList, 4);
+
+	PrintList(SList);
+
+	PushFront(SList, 5);
+	PushFront(SList, 6);
+	PushFront(SList, 7);
+	PushFront(SList, 8);
+	PushFront(SList, 9);
+
+	PrintList(SList);
+
+	PopFront(SList);
+	PopFront(SList);
+	PopFront(SList);
+	PopFront(SList);
+	PopFront(SList);
+
+	PrintList(SList);
+
+	Popback(SList);
+	Popback(SList);
+	Popback(SList);
+	Popback(SList);
+	Popback(SList);
+	PrintList(SList);
+}
+void Test2()
+{
+	SListNode*SList = NULL;
+	PushBack(SList, 1);
+	PushBack(SList, 2);
+	PushBack(SList, 3);
+	PushBack(SList, 4);
+
+	PrintList(SList);
+
+	SListNode*pos = Find(SList, 1);
+	Insert(pos, 50);
+	PrintList(SList);
+
+	pos = Find(SList, 3);
+	Insert(pos, 60);
+	PrintList(SList);
+
+	pos = Find(SList, 4);
+	Insert(pos, 70);
+	PrintList(SList);
+
+	pos = Find(SList, 4);
+	Erase(SList, pos);
+	PrintList(SList);
+
+	pos = Find(SList, 1);
+	Erase(SList, pos);
+	PrintList(SList);
+}
+void Test3()
+{
+	SListNode*SList = NULL;
+	PushBack(SList, 1);
+	PushBack(SList, 2);
+	PushBack(SList, 3);
+	PushBack(SList, 4);
+
+	PrintList(SList);
+
+	SListNode*pos = SList; //Find(SList, 2);
+	DelNoTailNode(pos);
+	PrintList(SList);
+
+	pos = Find(SList, 2);
+	InsertNFNode(pos, 20);
+	PrintList(SList);
+}
+
+void Test4()
+{
+	SListNode*SList = NULL;
+	PushBack(SList, 1);
+	PushBack(SList, 2);
+	PushBack(SList, 3);
+	PushBack(SList, 4);
+	PrintList(SList);
+	//PrintTTHList(SList);
+
+	SList=Reverse(SList);
+	PrintList(SList);
+
+	
+	//SListNode*pos = FindMidNode(SList);
+	//printf("%d\n", pos->data);
+	/*SListNode*pos = FindKNode(SList, 1);
+	printf("%d\n", pos->data);
+	pos = FindKNode(SList, 9);
+	printf("%d\n", pos->data);*/
+}
+
+int main()
+{
+    //InitList();
+	//Test1();
+	//Test2();
+	//Test3();
+	Test4();
+	system("pause");
+	return 0;
+}
+	
+

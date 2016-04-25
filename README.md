@@ -382,3 +382,189 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+12.c实现单链表
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+typedef int DataType;
+typedef struct SListNode     /* 定义单链表结点类型 */
+{
+	DataType  data;
+
+	struct SListNode *next;
+}SListNode;
+//////////有关操作：///////////////////////////////////////
+void InitList();/*初始化线性表*/
+SListNode *CreateNode(DataType x);/*新建结点*/
+void PrintList(SListNode*&pHead); /*打印链表*/
+SListNode * Find(SListNode*& pHead, DataType x);
+void PushBack(SListNode*& pHead, DataType x);
+void Popback(SListNode*& pHead);
+void PushFront(SListNode*& pHead, DataType x);
+void PopFront(SListNode * & pHead);
+void Insert(SListNode * pos, DataType x);/*插入节点*/
+void Erase(SListNode * pos); /*删除节点*/
+
+void InitList()
+{
+	SListNode* pHead;
+	pHead = (SListNode*)malloc(sizeof(SListNode));
+	if (pHead == NULL)
+	{
+		printf("申请空间失败\n");
+	}
+	pHead->next = NULL;
+}
+
+void PrintList(SListNode* &pHead)
+{
+	SListNode* cur = pHead;
+	while (cur)
+	{
+		printf("%d->", cur->data);
+		cur = cur->next;
+	}
+	printf("NULL\n");
+}
+SListNode *CreateNode(DataType x)
+
+{
+
+	SListNode *tmp = (SListNode *)malloc(sizeof(SListNode));
+	tmp->data = x;
+	tmp->next = NULL;
+	return tmp;
+}
+void PushBack(SListNode* & pHead, DataType x)//1.空 2.非空
+{
+	if (pHead == NULL)
+	{
+		pHead = CreateNode(x);
+	}
+	else
+	{
+		SListNode* tail = pHead;
+		while (tail->next != NULL)
+		{
+			tail = tail->next;
+		}
+		tail->next = CreateNode(x);
+	}
+
+}
+void Popback(SListNode*& pHead)//1.空2.一个节点3.多个节点
+{
+	if (pHead==NULL)
+	{
+	return;
+	}
+	else if (pHead->next == NULL)
+	{
+		free(pHead);
+		pHead = NULL;
+	}
+	else
+	{
+		SListNode* tail = pHead;
+		SListNode* prev = NULL;
+		while (tail->next)
+		{
+			prev = tail;
+			tail = tail->next;
+		}
+		prev->next=NULL;
+		free(tail);
+	}
+}
+
+
+void PushFront(SListNode*& pHead, DataType x) //1.空2.非空
+{
+	if (pHead == NULL)
+	{
+		pHead = CreateNode(x);
+	}
+	else
+	{
+		SListNode*tmp = CreateNode(x);
+		tmp->next = pHead;
+		pHead = tmp;
+	}
+}
+
+
+void PopFront(SListNode * & pHead)  //1.空2.一个节点3.多个节点
+{
+	if (pHead == NULL)
+	{
+		return;
+	}
+	else if (pHead->next = NULL)
+	{
+		free(pHead);
+		pHead = NULL;
+	}
+	else
+	{
+		SListNode*tmp = pHead;
+		pHead = tmp->next;
+		free(tmp);
+	}
+}
+
+
+SListNode * Find(SListNode*& pHead, DataType x)  //1.在其中2.不在其中
+{
+	SListNode*cur = pHead;
+	while (cur)
+	{
+		/*if (cur->data != x)
+		{
+			cur = cur->next;
+		}
+		return cur;  */   //错的！！！！！！！！
+		if (cur->data == x)
+		{
+			return cur;
+		}
+		cur = cur->next;
+
+
+	}
+	return NULL;
+}
+void Insert(SListNode * pos, DataType x)  //非空
+{
+	assert(pos);
+	SListNode* tmp = CreateNode(x);
+	tmp->next = pos->next;
+	pos->next = tmp;
+}
+
+void Erase(SListNode *& pHead,SListNode * pos)
+{
+	assert(pos); 
+	assert(pHead);
+	
+	if (pHead == pos)
+	{
+		pHead = pHead->next;
+		free(pos);
+
+	}
+	else
+	{
+
+		SListNode * prev = pHead;
+		while (prev->next != pos)
+		{
+			prev = prev->next;
+		}
+		prev->next = pos->next;
+		free(pos);
+	}
+
+}

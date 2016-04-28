@@ -774,3 +774,214 @@ int main()
 }
 	
 
+14.通讯录
+# include <stdio.h>
+# include <string.h>
+enum {EXIT,ADD,DEL,MODIFY,FIX,SHOW,CLEAR,SORT};
+typedef struct People
+{
+	char name[20];
+	char sex[2];
+	int age;
+	int tel[11];
+	char idd[40];
+}Peo;
+
+typedef struct Contact
+{
+	Peo dhb[1000];
+	int count;
+}Con, *pcon;
+void init(pcon ppcon);
+void add(pcon ppcon);
+void del(pcon ppcon);
+void modify(pcon ppcon);
+void fix(pcon ppcon);
+void show(pcon ppcon);
+void clear(pcon ppcon);
+void sort(pcon ppcon);
+int search(pcon con, char *pname)
+{
+	for (int i = 0; i < con->count; i++)
+	{
+     if (strcmp(con->dhb[i].name, pname) == 0)
+	  {
+		return i;
+	  }
+	}
+	return -1;
+}
+void init(pcon ppcon)    // 初始化
+{
+	ppcon->count = 0;
+}
+void add(pcon ppcon)
+{
+
+	printf("请输入姓名：");
+	scanf("%s", ppcon->dhb[ppcon->count].name);
+	printf("请输入性别："); 
+	scanf("%s", ppcon->dhb[ppcon->count].sex);
+	printf("请输入年龄：");
+	scanf("%d", &ppcon->dhb[ppcon->count].age);//&
+	printf("请输入电话：");
+	scanf("%s", ppcon->dhb[ppcon->count].tel);
+	printf("请输入地址：");
+	scanf("%s", ppcon->dhb[ppcon->count].idd);
+	ppcon->count++;
+	printf("添加联系人成功ok！\n");
+}
+void del(pcon ppcon)
+{
+	int ret;
+	int n;
+	char name[20];
+	printf("请输入要删除人的姓名：");
+
+	scanf("%s", name);
+	ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("是否确定要删除此联系人\n");
+		printf("是请按1，否请按0\n");
+		scanf("%d", &n);
+		if (n == 1)
+		{
+			for (int i =ret; i < ppcon->count; i++)
+			{
+				ppcon->dhb[i] = ppcon->dhb[i + 1];
+			}
+			printf("删除成功");
+			ppcon->count--;
+		}
+		else if (n == 0)
+			printf("删除失败");
+	}
+}
+void modify(pcon ppcon)
+{
+	char name[20];
+	printf("请输入要查找的人的姓名：");
+	scanf("%s", name);
+	int ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("%s", ppcon->dhb[ret].name);
+		printf("%s", ppcon->dhb[ret].sex);
+		printf("%d", ppcon->dhb[ret].age);
+		printf("%s", ppcon->dhb[ret].tel);
+		printf("%s", ppcon->dhb[ret].idd);
+	}
+	else
+	{
+		printf("此联系人不存在\n");
+	}
+}
+void fix(pcon ppcon)
+{
+	char name[20];
+	printf("请输入要修改的人的姓名：");
+	scanf("%s", name);
+	int ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("姓名修改成：");
+		scanf("%s", ppcon->dhb[ret].name);
+		printf("性别修改成：");
+		scanf("%s", ppcon->dhb[ret].sex);
+		printf("年龄修改成：");
+		scanf("%d", &ppcon->dhb[ret].age);
+		printf("电话修改成：");
+		scanf("%s", ppcon->dhb[ret].tel);
+		printf("地址修改成：");
+		scanf("%s", ppcon->dhb[ret].idd);
+		printf("修改成功\n");
+	}
+	else
+		printf("此人不存在\n");
+
+}
+void show(pcon ppcon)
+
+{
+	printf("输出所有人信息：");
+	for (int i = 0; i < ppcon->count; i++)
+	{
+		printf("%s\n", ppcon->dhb[i].name);
+		printf("%s\n", ppcon->dhb[i].sex);
+		printf("%d\n", ppcon->dhb[i].age);//此处不许用再取地址，因为ppcon->dhb[i].age已经是int型的数字，加上&则是取12的地址了
+		printf("%s\n", ppcon->dhb[i].tel);
+		printf("%s\n", ppcon->dhb[i].idd);
+	}
+	printf("\n");
+}
+void clear(pcon ppcon)
+{
+	printf("清空所有联系人：");
+	/*for (int i = 0; i < p->count; i++)
+	{
+		p->dhb[i] = p->dhb[i + 1];
+	}*/
+	ppcon->count = 0;
+
+}
+void sort(pcon ppcon)
+{
+	for (int i = 0; i < ppcon->count - 1; i++)
+	{
+			for (int j = 0; j < ppcon->count - 1 - i; j++)
+		{
+				if (strcmp(ppcon->dhb[j].name, ppcon->dhb[j + 1].name)>0)
+			{
+				Peo tmp;
+				tmp = ppcon->dhb[j];
+				ppcon->dhb[j] = ppcon->dhb[j + 1];
+				ppcon->dhb[j + 1] = tmp;
+			}
+		}
+	
+	}
+	show(&ppcon);
+}
+void menu()
+
+{
+	printf("****      menu     ****\n");
+	printf("****1.add  2.delete****\n");
+	printf("****3.modify 4.fix   ****\n");
+	printf("****5.show 6.clear ****\n");
+	printf("****7.sort 0.exit  ****\n");
+}
+void test()
+{
+	Con con;
+	init(&con);
+	int input = 1;
+	
+	while (input)
+	{
+		menu();
+		printf("请选择操作选项：");
+		scanf("%d", &input);
+		switch (input)
+		{
+		case ADD:add(&con); break;
+		case DEL:del(&con); break;
+		case MODIFY:modify(&con); break;
+		case FIX:fix(&con); break;
+		case SHOW:show(&con); break;
+		case CLEAR:clear(&con); break;
+		case SORT:sort(&con); break;
+		case EXIT:exit(1); break;
+		}
+	}
+}
+int main()
+{
+	test();
+	system("pause");
+	return 0;
+}

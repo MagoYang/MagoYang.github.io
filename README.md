@@ -1093,3 +1093,104 @@ int main()
 	system("pause");
 	return 0;
 }
+16.Stack  栈
+//用数组实现栈
+# include <iostream>
+using namespace std;
+template <class T>
+class Stack
+{
+public:
+	Stack()
+		: a(NULL)
+		,top(0)
+		, capacity(0)
+	{}
+	~Stack()
+	{
+		if (a)
+		{
+			delete[] a;   //撤销数组的空间
+		}
+	}
+public:
+	void Push(const T& x)
+	{
+		Checkcapacity();
+		a[top++] = x;
+
+
+	}
+	void Pop()
+	{
+		if (top>0)
+			--top;
+
+
+	}
+	bool Empty()
+	{
+		if (top == 0)
+			return true;
+		else
+			return false;
+	}
+	size_t Size()//当前栈中元素的个数
+	{
+		return top;
+	}
+	T& Top()
+	{
+		return a[top - 1];
+	}
+
+protected:
+	T* a=NULL;       // 数组a
+	size_t top;    //栈顶位置
+	size_t capacity;
+protected:
+	void Checkcapacity()
+	{
+		if (a == 0)
+		{
+			capacity = 1;  //这里一定要用一个非零数字，否则执行else时空间开辟不出来，与后面加的3的效果一样
+			a = new T[capacity];
+			return;
+		}
+		if (top == capacity)
+		{
+			size_t i = 0;
+			capacity = 2 * capacity +3;
+			T*tmp = new T[capacity];
+			for (i = 0; i < top; ++i)   //++i   i++
+			{
+				tmp[i] = a[i];
+			}
+			delete[] a;
+			a = tmp;
+
+		}
+	}
+};
+
+int main()
+{
+	Stack<int> s1;
+	/*for (int j = 0; j < 10; j++)
+	{
+		s1.Push(j);
+	}*/
+	//cout << s1.Push(j) << "--";
+	s1.Push(1);
+	s1.Push(2);
+	s1.Push(3);
+	s1.Push(4);
+	//cout << s1.Push() << endl;
+	while (!s1.Empty())
+	{
+		cout << s1.Top() << "- ";
+		s1.Pop();
+	}
+	system("pause");
+	return 0;
+}

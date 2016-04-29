@@ -985,3 +985,111 @@ int main()
 	system("pause");
 	return 0;
 }
+15.Queue 队列
+#define _CRT_SECURE_NO_WARNINGS 1
+//用链表实现队列
+# include <assert.h>
+# include <iostream>
+using namespace std;
+
+template <class T>
+struct Node
+{
+	T _data;            //指针存储域
+	Node<T>* _next;     //结点指针域，指向下一个节点
+	Node(const T&x)    //有参构造函数
+		:_data(x)   //冒号之后及大括号之间叫初始化列表：开辟空间并同时初始化变量
+		, _next(NULL)
+	{}
+};
+template <class T>  //须有，否则编译不通过
+class Queue
+{
+public:
+	Queue()          
+		:_head(NULL)
+		, _tail(NULL)
+		, _size(0)
+
+	{}
+	~Queue()              
+	{}
+public:
+	void Push(const T& x)
+	{
+		if (_head == NULL)
+		{
+			_head = _tail = new Node<T>(x);
+		}
+		else
+		{
+			_tail->_next = new Node<T>(x);
+			_tail = _tail->_next;
+		}
+		++_size;
+
+	}
+	void Pop()    //只是从头pop节点，因为队列是尾进头出；
+	{
+		assert(_head);
+		if (_head == _tail)
+		{
+			delete _head;
+			_head = _tail = NULL;
+		}
+		else
+		{
+			Node<T>* _del = _head;
+			_head = _head->_next;
+			delete _del;
+		}
+		--_size;
+	}
+	bool Empty()
+	{
+		if (1)
+			return _head == NULL;
+	}
+	T& Front()
+	{
+		assert(_head);
+		return _head->_data;
+	}
+	T& Back()
+	{
+		assert(_tail);
+		return _tail->_data;
+	}
+	size_t Size()
+	{
+		return _size;
+	}
+protected:
+	Node<T> * _head;
+	Node<T> * _tail;
+	size_t _size;
+};
+
+
+void TestQueue()
+{
+	Queue<int> q1;
+	q1.Push(1);
+	q1.Push(2);
+	q1.Push(3);
+	q1.Push(4);
+	while (!q1.Empty())
+	{
+		//cout << q1.Back() << " ";     //此处不能用back，否则违反了队列的特性
+		cout << q1.Front() << " ";
+		q1.Pop();
+	}
+
+}
+
+int main()
+{
+	TestQueue();
+	system("pause");
+	return 0;
+}

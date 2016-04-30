@@ -1194,3 +1194,244 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+17.Generalized  广义表
+#define _CRT_SECURE_NO_WARNINGS 1
+# include <iostream>
+using namespace std;
+# include <assert.h>
+enum Type        //类型
+{
+	HEAD,VALUE,SUB    //分别为头结点，原子值，子表节点类型
+};
+struct GeneralizedNode     
+{
+	Type _type;  //类型
+	GeneralizedNode* _next;   //指向同一层的下一个节点
+	union
+	{
+		int _value;    //节点的值
+		GeneralizedNode*_subLink;   //指向子表的指针
+	};
+	GeneralizedNode(Type type = HEAD, int value = 0)  //初始化列表并同时开辟空间
+		:_type(type)
+		, _next(NULL)
+	{
+		if (_type == VALUE)
+			_value = value;
+		else if (_type == SUB)
+			_subLink = NULL;
+	}
+};
+                                  /*广义表数据元素创建结点：结点类型_type（HEAD,VALUE,SUB）
+								  
+								  与同层指向下一个结点的指针_next，以及值域_value(若没有值即是指向子表的指针_subLink)*/
+class Generalized
+{
+public:
+	Generalized()
+		:_head(NULL)
+	{}
+	Generalized(const char*str)      
+		:_head(NULL)
+	{
+		_head = _CreatList(str);   //创建广义表   由书写顺序到链表
+	}
+	Generalized(const Generalized& g)
+	{
+		_head = _Copy(g._head);  //复制广义表   由链表到链表
+	}
+	Generalized& operator=(Generalized g)   //运算符重载
+	{
+		swap(this->_head, g._head);   //????
+		return *this;
+	}
+	~Generalized()   //析构
+	{
+		_Destory(_head);
+	}
+	bool _isValue(char ch)    //判断值域
+	{
+		if ((ch >= '0'&&ch <= '9') || (ch >= 'a'&&ch <= 'z') || (ch >= 'A'&&ch <= 'Z'))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	void Print()
+	{
+		_Print(_head);
+		cout << endl;
+	}     
+	size_t Size()                 
+	{
+		return _Size(_head);
+	}
+	size_t Depth()
+	{
+		return _Depth(_head);
+	}
+protected:
+	void _Destory(GeneralizedNode* head)   //销毁
+	{
+		GeneralizedNode* cur = head;
+		while (cur)
+		{
+			GeneralizedNode* del = cur;
+			cur = cur->_next;
+			if (del->_type == SUB)
+			{
+				_Destory(del->_subLink);
+			}
+			delete del;
+		}
+		
+	}
+	GeneralizedNode*_Copy(GeneralizedNode* head)  // 复制
+	{
+		GeneralizedNode* newHead = new GeneralizedNode(HEAD);
+		GeneralizedNode* newCur = newHead;
+		GeneralizedNode* cur = head->_next;
+		while (cur)
+		{
+			if (cur->_type == VALUE)
+			{
+				newCur->_next = new GeneralizedNode(VALUE, cur->_value);
+				newCur = newCur->_next;
+			}
+			else if (cur->_type == SUB)
+			{
+				newCur->_next = new GeneralizedNode(SUB);
+				newCur = newCur->_next;
+				newCur->_subLink = _Copy(cur->_subLink);   
+			}
+			cur = cur->_next;
+		}
+		return newHead;
+	}
+	size_t _Depth(GeneralizedNode* head)
+	{
+		int depth = 1;
+		GeneralizedNode* cur = head;
+		while (cur)
+		{
+			if (cur->_type == SUB)
+			{
+				int   subDepth = _Depth(cur->_subLink);
+				if (subDepth + 1 > depth)
+				{
+					depth = subDepth + 1;
+				}
+			}
+			cur = cur->_next;
+		}
+		return depth;
+	}
+	size_t _Size(GeneralizedNode* head)
+	{
+		size_t size = 0;
+		GeneralizedNode*cur = head;
+		while (cur)
+		{
+			if (cur->_type == VALUE)
+			{
+				++size;
+			}
+			else if (cur->_type == SUB)
+			{
+				size += _Size(cur->_subLink);
+			}
+			cur = cur->_next;
+		}
+		return size;
+	}
+	void _Print(GeneralizedNode* head)
+	{
+		GeneralizedNode* cur = head;
+		while (cur)
+		{
+			if (cur->_type == HEAD)
+			{
+				cout << "(";
+			}
+			else if (cur->_type == VALUE)
+			{
+				cout << (char)cur->_value;
+				if (cur->_next)
+					cout << ",";
+			}
+			else
+			{
+				_Print(cur->_subLink);
+				if (cur->_next)
+					cout << ",";
+			}
+			cur = cur->_next;
+		}
+		cout << ")";
+	}
+	GeneralizedNode* _CreatList(const char*&str)    // 创建
+	{
+		assert(*str == '(');
+		++str;
+		GeneralizedNode* head = new GeneralizedNode(HEAD);
+		GeneralizedNode*cur = head;
+		while (*str)
+		{
+			if (_isValue(*str))
+			{
+				cur->_next = new GeneralizedNode(VALUE, *str);
+				cur = cur->_next;
+				++str;
+			}
+			else if (*str == '(')
+			{
+				GeneralizedNode* subNode = new GeneralizedNode(SUB);
+			    cur->_next = subNode;
+				cur = cur->_next;
+				subNode->_subLink = _CreatList(str);
+			}
+			else if (*str == ')')
+			{
+				++str;
+				return head;
+			}
+			else
+			{
+				++str;
+			}
+		}
+		cout << "广义表字符串错误" << endl;
+		assert(false);
+		return head;
+	}
+
+protected:
+	GeneralizedNode* _head;
+};
+void TestGeneralized()
+{
+	Generalized g1("()");
+	Generalized g2("(a,b)");
+	Generalized g3("(a,b,(c,d))");
+	Generalized g4("(a,b,(c,d),(e,(f),h))");
+
+	g4.Print();
+
+	cout << "g4.Size:>" << g4.Size() << endl;
+	cout << "g4.Depth:>" << g4.Depth() << endl;
+
+	Generalized g5(g4);
+	g5.Print();
+}
+int main()
+{
+	TestGeneralized();
+	
+	system("pause");
+	return 0;
+}

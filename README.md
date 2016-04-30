@@ -1435,3 +1435,52 @@ int main()
 	system("pause");
 	return 0;
 }
+
+18.练习
+#include <stdio.h>
+#include <windows.h>
+void main()
+{
+	printf("my world\n");
+	system("pause");
+}
+
+#include <stdio.h>
+void main()
+{
+	printf("welcome!\n");
+	system("pause")
+}
+
+
+#include <stdio.h >
+int max(int x, int y, int z);
+main()
+{
+	int a, b, c, d;
+	printf("enter three numbers:");
+	scanf_s("%d,%d,%d",&a,&b,&c);
+	d = max(a,b,c);
+	printf("max=%d\n", d);
+
+	system("pause");
+}
+int max(int x, int y, int z)
+{
+	int w;
+	if (x >= y)
+	{
+		if (x >= z)
+			w = x;
+		else
+			w = z;
+	}
+	else
+	{
+		if (y <= z)
+			w = z;
+		else
+			w = y;
+	}
+	return w;
+ //一定要注意输入数据时的格式，用逗号隔开，而不是空格

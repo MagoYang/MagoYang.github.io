@@ -1563,3 +1563,63 @@ int main()
 	return 0;
 }
 
+19.字符串右旋实现:(1)三步反转法  （2）直接移动法
+# include <stdio.h>
+# include <string.h>
+# include <assert.h>
+void Reverse(char* start, char* end)
+{
+	assert(start);
+	assert(end);
+	while (start < end)
+	{
+		char tmp = *start;
+		*start = *end;
+		*end = tmp;
+		start++;
+		end--;
+	}
+}
+void RightLoopMove(char* pStr, size_t n)
+{
+	int len = strlen(pStr);
+	Reverse(pStr, pStr + len - n - 1);
+	Reverse(pStr+len-n, pStr + len - 1);
+	Reverse(pStr, pStr + len- 1);
+}
+int main()
+{
+	char arr[] = "abcdef";
+	RightLoopMove(arr, 2);
+	printf("%s\n", arr);
+	system("pause");
+	return 0;
+}
+
+
+# include <stdio.h>
+# include <string.h>
+# include <assert.h>
+RightLoopMove(char* pStr, size_t n)
+{
+	assert(pStr);
+	int len = strlen(pStr);
+	while (n)
+	{
+		char tmp = pStr[len-1];
+		for (int i = len-1; i >0; i--)
+		{
+			pStr[i] = pStr[i - 1];
+		}
+		pStr[0] = tmp;
+		n--;
+	}
+}
+int main()
+{
+	char arr[] = "abcdef";
+	RightLoopMove(arr, 2);
+	printf("%s\n", arr);
+	system("pause");
+	return 0;
+}

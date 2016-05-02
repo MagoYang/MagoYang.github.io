@@ -1484,3 +1484,82 @@ int max(int x, int y, int z)
 	}
 	return w;
  //一定要注意输入数据时的格式，用逗号隔开，而不是空格
+ 
+ 18.//编写程序实现字符串到整数的转换，如输入字符串“12345”，输出整数12345；
+//即实现atoi（）； 
+#include <stdio.h>
+#include <assert.h>
+#include <ctype.h>
+#include <limits.h>
+enum RET
+{
+	VALID,INVALID
+};
+enum RET state = VALID;
+int my_atoi(const char* str)
+{
+	assert(str);
+	int flag = 1;
+	long long ret = 0;
+	if (str == NULL)   //指针为NULL
+	{
+		return 0;
+	}
+	if (*str == '\0')  //空字符串
+	{
+		return 0;
+	}
+	while (isspace(*str))//空白字符处理
+	{
+		str++;
+	}
+	if (*str == '-') //+ -号处理
+	{
+		flag = -1;
+	}
+	if ((*str == '+') || (*str == '-'))
+	{
+		str++;
+	}
+	while (*str)
+	{
+		if ((*str >= '0') &&(*str <= '9'))
+		{
+			ret = ret * 10 + flag*(*str - '0');
+			if ((ret>INT_MAX) || (ret < INT_MIN))    //处理溢出
+			{
+				printf("数值越界\n");
+				return  0;
+			}
+			
+		}
+		else
+		{
+			state = INVALID;  //处理异常字符
+			return ret;
+			    
+		}
+		str++;
+	}
+	return ret;
+	
+	
+}
+int main()
+{
+	char arr[20];
+	scanf("%s", arr);
+	int ret = my_atoi(arr);
+	if (state == VALID)
+	{
+		printf("%d\n", ret);
+	}
+	else 
+	{
+		printf("输入值非法\n");
+		printf("%d\n", ret);
+	}
+	system("pause");
+	return 0;
+}
+

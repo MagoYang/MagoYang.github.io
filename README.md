@@ -2274,3 +2274,344 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+21.通讯录（动态+文件）
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+//1.头文件
+# include <stdio.h>
+# include <string.h>
+#include <assert.h>
+#include <stdlib.h>
+
+#define FILENAME  "contact.dat"
+
+
+
+enum { EXIT, ADD, DEL, FIND, MODIFY, SHOW, CLEAR, SORT };
+
+typedef struct People
+{
+	char name[20];
+	char sex[2];
+	int age;
+	int tel[11];
+	char idd[40];
+}Peo;
+
+typedef struct Contact
+{
+	Peo* dhb;  //指向电话本的指针
+	int count; //记录当前有效人信息个数
+	int capacity;  //容量
+}Con, *pcon;
+
+
+void init(pcon pc);
+void add(pcon pc);
+void del(pcon pc);
+void find(pcon pc);
+void modify(pcon pc);
+void show(pcon pc);
+void clear(pcon pc);
+void sort(pcon pc);
+void check(pcon pc);  //检查容量
+void load(pcon pc);   //下载
+void save(pcon pc);  //保存
+void printff(int*pr);
+
+
+//2.实现
+
+int search(pcon con, char *pname)
+{
+	for (int i = 0; i < con->count; i++)
+	{
+		if (strcmp(con->dhb[i].name, pname) == 0)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+void init(pcon pc)    // 初始化
+{
+	pc->count = 0;
+	pc->dhb = (Peo*)malloc(2 * sizeof(Peo));
+	if (pc->dhb == NULL)
+	{
+		printf("开辟失败\n");
+		exit(EXIT_FAILURE);
+	}
+	memset(pc->dhb, 0, 2*sizeof(Peo));
+	pc->capacity = 2;
+	load(pc);
+}
+
+void check(pcon pc)
+{
+	
+	if (pc == NULL)
+	{
+		return;
+	}
+
+	if ((pc->count) >= (pc->capacity))              //一定是>=,否则运行出错
+	{
+		pc->dhb =(Peo*) realloc(pc->dhb, (pc->capacity + 3)*sizeof(Peo));
+		pc->capacity = pc->capacity + 3;
+	}
+	if (pc->dhb == NULL)
+	{
+		perror("开辟失败");
+		exit(EXIT_FAILURE);
+	}
+	
+}
+
+void load(pcon pc)
+{
+	int i = 0;
+	//pc->count = i;
+	FILE* read = fopen(FILENAME, "r");
+	if (read == NULL)
+	{
+		perror("open file contact.c for read");
+		exit(EXIT_FAILURE);
+	}
+	
+	while (fread(&(pc->dhb[i]), sizeof(Peo), 1, read))  //此处应该有个变量来i标记位置，方便检测
+	{
+		i++;
+		pc->count++;
+		check(pc);
+	}
+	
+	//pc->count = i;
+	
+	fclose(read);
+
+}
+void save(pcon pc)
+{
+	int i = 0;
+	//int* pr = NULL;
+	FILE* write = fopen(FILENAME, "w");
+	if (write == NULL)
+	{
+		perror("open file contact.c for write");
+		exit(EXIT_FAILURE);
+	}
+	//fwrite((&pr), sizeof(Peo), 1, write);
+	for (i = 0; i < pc->count; i++)
+	{
+		fwrite(&(pc->dhb[i]), sizeof(Peo), 1, write);
+		fputc('\n', write);
+	}
+	fclose(write);
+	free(pc->dhb);
+}
+
+void printff(int*pr)
+{
+	printf("%10s\t%5s\t%3s\t%12s\t%10s\n", "名字", "性别", "年龄", "电话", "地址");
+}
+
+//操作
+void add(pcon pc)
+{
+	check(pc);
+	/*if (pc->count >= 1000)
+	{
+		printf("电话本满了\n");
+		return;
+	}*/
+	printf("请输入姓名：");
+	scanf("%s", pc->dhb[pc->count].name);
+	printf("请输入性别：");
+	scanf("%s", pc->dhb[pc->count].sex);
+	printf("请输入年龄：");
+	scanf("%d", &pc->dhb[pc->count].age);  //&
+	printf("请输入电话：");
+	scanf("%s", pc->dhb[pc->count].tel);
+	printf("请输入地址：");
+	scanf("%s", pc->dhb[pc->count].idd);
+	pc->count++;
+	printf("添加联系人成功ok！\n");
+}
+void del(pcon pc)
+{
+	int ret;
+	int n;
+	enum {ZERO,ONE};
+	char name[20];
+	printf("请输入要删除人的姓名：");
+
+	scanf("%s", name);
+	ret = search(pc, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("是否确定要删除此联系人\n");
+		printf("是请按1，否请按0\n");
+		scanf("%d", &n);
+		if (n == ONE)
+		{
+			for (int i = ret; i < pc->count; i++)
+			{
+				pc->dhb[i] = pc->dhb[i + 1];
+			}
+			printf("删除成功");
+			pc->count--;
+		}
+		else if (n == ZERO)
+			printf("删除失败");
+	}
+	else
+	{
+		printf("此联系人不存在\n");
+	}
+}
+void find(pcon pc)
+{
+	char name[20];
+	printf("请输入要查找的人的姓名：");
+	scanf("%s", name);
+	int ret = search(pc, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("%10s\t%5s\t%3s\t%12s\t%10s\n", "名字", "性别", "年龄", "电话", "地址");
+		printf("%10s\t", pc->dhb[ret].name);
+		printf("%5s\t", pc->dhb[ret].sex);
+		printf("%3d\t", pc->dhb[ret].age);
+		printf("%12s\t", pc->dhb[ret].tel);
+		printf("%10s\t", pc->dhb[ret].idd);
+		printf("\n");
+	}
+	else
+	{
+		printf("此联系人不存在\n");
+	}
+}
+void modify(pcon pc)
+{
+	char name[20];
+	printf("请输入要修改的人的姓名：");
+	scanf("%s", name);
+	int ret = search(pc, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("姓名修改成：");
+		scanf("%s", pc->dhb[ret].name);
+		printf("性别修改成：");
+		scanf("%s", pc->dhb[ret].sex);
+		printf("年龄修改成：");
+		scanf("%d", &pc->dhb[ret].age);
+		printf("电话修改成：");
+		scanf("%s", pc->dhb[ret].tel);
+		printf("地址修改成：");
+		scanf("%s", pc->dhb[ret].idd);
+		printf("修改成功\n");
+		printf("%10s\t%5s\t%3s\t%12s\t%10s\n", "名字", "性别", "年龄", "电话", "地址");
+		printf("%10s\t", pc->dhb[ret].name);
+		printf("%5s\t", pc->dhb[ret].sex);
+		printf("%3d\t", pc->dhb[ret].age);
+		printf("%12s\t", pc->dhb[ret].tel);
+		printf("%10s\t", pc->dhb[ret].idd);
+		printf("\n");
+	}
+	else
+		printf("此人不存在\n");
+
+}
+void show(pcon pc)
+
+{
+	printf("输出所有人信息：\n");
+	printf("%10s\t%5s\t%3s\t%12s\t%10s\n", "名字", "性别", "年龄", "电话", "地址");
+	for (int i = 0; i < pc->count; i++)
+	{
+		printf("%10s\t", pc->dhb[i].name);
+		printf("%5s\t", pc->dhb[i].sex);
+		printf("%3d\t", pc->dhb[i].age);//此处不许用再取地址，因为pc->dhb[i].age已经是int型的数字，加上&则是取12的地址了
+		printf("%12s\t", pc->dhb[i].tel);
+		printf("%10s\n", pc->dhb[i].idd);
+	}
+	printf("\n");
+}
+void clear(pcon pc)
+{
+	printf("清空所有联系人：");
+	/*for (int i = 0; i < p->count; i++)
+	{
+	p->dhb[i] = p->dhb[i + 1];
+	}*/
+	pc->count = 0;
+
+}
+void sort(pcon pc)
+{
+	for (int i = 0; i < pc->count - 1; i++)
+	{
+		for (int j = 0; j < pc->count - 1 - i; j++)
+		{
+			if (strcmp(pc->dhb[j].name, pc->dhb[j + 1].name)>0)
+			{
+				Peo tmp;
+				tmp = pc->dhb[j];
+				pc->dhb[j] = pc->dhb[j + 1];
+				pc->dhb[j + 1] = tmp;
+			}
+		}
+
+	}
+	show(pc);
+}
+
+
+//3.测试
+void menu()
+
+{
+	printf("****      menu     ****\n");
+	printf("****1.add  2.delete****\n");
+	printf("****3.find 4.modify   ****\n");
+	printf("****5.show 6.clear ****\n");
+	printf("****7.sort 0.exit  ****\n");
+}
+void test()
+{
+	Con con;
+	init(&con);
+	int input = 1;
+
+	while (input)
+	{
+		menu();
+		printf("请选择操作选项：");
+		scanf("%d", &input);
+		switch (input)
+		{
+		case ADD:add(&con); break;
+		case DEL:del(&con); break;
+		case FIND:find(&con); break;
+		case MODIFY:(&con); break;
+		case SHOW:show(&con); break;
+		case CLEAR:clear(&con); break;
+		case SORT:sort(&con); break;
+		case EXIT:save(&con); break; 
+		default:printf("选择错误\n");break;//
+		}
+	}
+}
+int main()
+{
+	test();
+	system("pause");
+	return 0;
+}
+

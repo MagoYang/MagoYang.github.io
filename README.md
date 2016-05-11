@@ -1623,3 +1623,654 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+20.通讯录（静态）
+#define _CRT_SECURE_NO_WARNINGS 1
+# include <stdio.h>
+# include <string.h>
+enum {EXIT,ADD,DEL,MODIFY,FIX,SHOW,CLEAR,SORT};
+typedef struct People
+{
+	char name[20];
+	char sex[2];
+	int age;
+	int tel[11];
+	char idd[40];
+}Peo;
+
+typedef struct Contact
+{
+	Peo dhb[1000];
+	int count;
+}Con, *pcon;
+void init(pcon ppcon);
+void add(pcon ppcon);
+void del(pcon ppcon);
+void modify(pcon ppcon);
+void fix(pcon ppcon);
+void show(pcon ppcon);
+void clear(pcon ppcon);
+void sort(pcon ppcon);
+
+#define _CRT_SECURE_NO_WARNINGS 1
+//# include <stdio.h>
+//#define N 20
+//
+//int main()
+//{
+//	int cur = N;  //当下共有的瓶子数
+//	int count = N;//当下共喝的汽水瓶数
+//		while (cur > 1)
+//	 {
+//		int x;
+//		x = cur % 2;
+//		count += cur / 2;
+//		cur = cur / 2 + x;
+//	}
+//	
+//	printf("总共喝汽水：%d\n", count);
+//	system("pause");
+//	return 0;
+//}
+//注：当钱数为0或1元时，会直接用printf函数输出原数，其他则会进入循环判断
+
+//#include <stdio.h>
+//#define MAX  20
+//int main()
+//{
+//	int money = MAX;
+//	int count = MAX;
+//	while (1)
+//	{
+//		if (money % 2 != 0)
+//		{
+//			count = count + money - 1;
+//			break;
+//		}
+//		else
+//		{
+//			money = money / 2;
+//			count += money;
+//		}
+//	}
+//	printf("%d\n", count);
+//	return 0;
+//}
+
+
+//#include <stdio.h>
+//int add(int x, int y)
+//{
+//	int z = 0;
+//	z = x + y;
+//	return z;
+//}
+//int main()
+//{
+//	int a = 1;
+//	int b = 2;
+//	int c = 0;
+//	c = add(a, b);
+//	system("pause");
+//	return 0;
+//}
+//
+////字符串连接函数 strcat
+////原型strcat(char[],const char[])
+//#include <stdio.h>
+////#include <string.h>
+//#include <assert.h>
+////void my_strcat(char strdest[], const char strsrc[]);
+//char * my_strcat(char *strdest, const char *strsrc)
+//{
+//	assert(strdest);
+//	assert(strsrc);
+//	char *ret = strdest;
+//	while (*strdest)
+//	{
+//		strdest++;
+//	}
+//	while (*strdest++ = *strsrc++)
+//	{
+//		;         //为了保证循环的继续 必须有！
+//	}
+//	return ret;
+//}
+//int main()
+//{
+//	char dest[20] = "This is ";
+//	char src[] = "my_strcat";
+//	my_strcat(dest, src);
+//	printf("%s\n", dest);   //%s 输出一个字符串
+//	system("pause");
+//	return 0;
+//
+//}
+//
+//
+////strstr函数   思路：在字符串s1中查找s2的第一次出现的位置，否则返回null
+////原型 ： char *strstr(char *str1, const char *str2);
+//# include <stdio.h>
+////#include <string.h>
+//char * my_strstr(char *s1, const char *s2)  
+//{  
+//    int n=0;  
+//    if (*s2)  
+//    {  
+//        while (*s1)  
+//        {  
+//			if (*(s1 + n) == *(s2 + n))
+//			{
+//				if (*(s2 + n + 1) == NULL)
+//				{
+//					return (char *)s1;
+//				}
+//			   n++;
+//			}
+//           /* for (n=0; *(s1 + n) == *(s2 + n); n++)  
+//            {  
+//
+//                if (*(s2 + n + 1)==NULL)  
+//                    return (char *)s1;  
+//            }  */
+//            s1++;    //只要第n次不相等时，就进行s1++，直到满足条件时开始执行下一条语句
+//        }  
+//        return NULL;  
+//    }  
+//    else  
+//        return (char *)s1;
+//}
+
+//int main()
+//{
+//	char*str1 = "1233456";
+//	char* str2 = "345";
+//	char*s=my_strstr(str1, str2);
+//	printf("%s\n", s);
+//	system("pause");
+//	return 0;
+//}
+
+
+//1.模拟实现strcmp 
+				/*C/C++函数，比较两个字符串.设这两个字符串为str1，str2，若str1 == str2，则返回零；若str1>str2，则返回正数；
+				若str1<str2，则返回负数。*/
+//2.模拟实现memcpy  c和c++使用的内存拷贝函数，
+                //memcpy函数的功能是从源src所指的内存地址的起始位置开始拷贝n个字节到目标dest所指的内存地址的起始位置中。
+//3.模拟实现memmove
+
+
+//#include <stdio.h>
+//#include <assert.h>
+//char * my_strcmp(const char* str1,const char* str2) //字符串比较函数
+//{
+//	//assert(str1);
+//	//assert(str2);
+//	const char *s1 = str1;
+//	const char *s2 = str2;
+//	while (*s1||*s2 )
+//
+//	{
+//		if (*s2 == '\0' || *s1 > *s2)
+//		{
+//			return 1;
+//		}
+//		else if (*s1 == '\0' || *s1 < *s2)
+//		{
+//			return -1;
+//		}
+//		else
+//		{
+//			return 0;
+//		}
+//		s1++;
+//		s2++;
+//	}
+//		return 0;  // 是在两个字符串都为空时返回值 0
+//}
+//
+//void* my_memcpy( void * dest,void *src,size_t n)//不相干内存
+//{
+//	assert(dest);
+//	assert(src);
+//	char * ret = dest;
+//	char *pdest = (char *)dest;
+//	char *psrc = (char *)src;
+//	while (n-- > 0)
+//	{
+//		*pdest++ = *psrc++;
+//	}
+//	return ret;
+//}
+//
+//void* my_memmove(void *dest,const void *src,size_t n)//相干不相干内存都可
+//{
+//	assert(dest);
+//	assert(src);
+//	char *pdest = (char *)dest;
+//	char *psrc = (char *)src;
+//	char *ret = dest;
+//	if ((src < dest) && (pdest < psrc + n))   //内存重复时
+//	{
+//		*pdest =  *(pdest + n - 1);
+//		*psrc =  *(psrc + n - 1);
+//		while (n-->0)
+//		{
+//			//*pdest = *(pdest + n);
+//			//*psrc = *(psrc + n);
+//			*(pdest--) = *(psrc--);
+//		}
+//
+//
+//	}
+//	else
+//	{
+//		while (n-- > 0)
+//		{
+//			*pdest++ = *psrc++;
+//		}
+//	}
+//		
+//	return ret;
+//}
+//void Test1()
+//{
+//	char *str1 = "12345";
+//	char *str2 = "456";
+//	char *tmp = my_strcmp(str1, str2);
+//	printf("%d\n", tmp);
+//}
+//void Test2()
+//{
+//	char * str1 = "abcdefg";
+//	char arr[20];
+//	memset(arr, 0, sizeof(arr));     //将内存设置初始化为0
+//	char* tmp = my_memcpy(arr, str1, 5);
+//	printf("%s\n", tmp);
+//}
+//void Test3()
+//{
+//	char str[] = "123456789";
+//	my_memmove(str + 4, str + 3, 3);
+//	puts(str);
+//
+//}
+//int main()
+//{
+//	//Test1();
+//	//Test2();
+//	Test3();
+//	system("pause");
+//	return 0;
+//}
+
+
+////冒泡排序  方法：1.数组 2.指针
+//# include  <stdio.h>
+////# define N  10
+//void bubbleSort(int arr[], int size)
+//{
+//	int i = 0;
+//	int j = 0;
+//	for (i = 0; i < size - 1;i++)
+//	for (j = 0; j < size - 1 - i; j++)
+//	{
+//		if (arr[j]>arr[j + 1])
+//		{
+//			int tmp = arr[j];
+//			arr[j] = arr[j + 1];
+//			arr[j + 1] = tmp;
+//		}
+//	}
+//}
+//	
+//
+//int main()
+//{
+//	int i=0;
+//	int arr[] = { 9,8,7,6,5,4,3,2,1,0 };
+//	int size = sizeof(arr) / sizeof(arr[0]);
+//	 bubbleSort(arr,size);
+//	 for (i = 0; i < size; i++)
+//	 {
+//		 printf(" %d ", arr[i]);
+//	 }
+//	system("pause");
+//	return 0;
+//}
+//
+//# include  <stdio.h>
+////# define N  10
+//void bubbleSort(int* p, int size)
+//{
+//	int i = 0;
+//	int j = 0;
+//	for (i = 0; i < size - 1; i++)
+//	for (j = 0; j < size - 1 - i; j++)
+//	{
+//		if (*(p+j)>*(p+j+1))
+//		{
+//			int tmp = *(p + j);
+//			*(p + j) = *(p + j + 1);
+//			*(p + j + 1) = tmp;
+//		}
+//	}
+//}
+//
+//
+//int main()
+//{
+//	int i = 0;
+//	int arr[] = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+//	int size = sizeof(arr) / sizeof(arr[0]);
+//	int *p = arr;                 //数组名指数组的起始位置
+//	bubbleSort( p, size);
+//	for (i = 0; i < size; i++)
+//	{
+//		printf(" %d ", *(p+i));
+//	}
+//	system("pause");
+//	return 0;
+//} 
+
+//1.完成杨氏矩阵的查找函数
+//2.模拟实现strchr和strrchr
+//3.模拟实现strrstr
+//4.研究结构体内存对齐
+//5.研究柔性数组
+
+//# include <stdio.h>
+// char *my_strchr(const char *str, char ch)
+//{
+//	if (*str)
+//	{
+//		while (*str != '\0'&&*str != ch)
+//		{
+//			++str;      //str++;
+//		}
+//		return *str == ch ? str : null;
+//	}
+//	else
+//		return null;
+//
+//}
+//int  my_strchr(const char *str, int ch)
+//{
+//	int count = 1;
+//	if (*str)
+//	{
+//		while (*str != '\0'&&*str != ch)
+//		{
+//			++str; //str++;
+//			++count;//count++;
+//		}
+//		return *str == ch ? count : null;
+//	}
+//	else
+//		return null;
+//
+//}
+//char* my_strrchr(const char *str, char ch)
+//{
+//	const char *ptr = null;
+//	
+//	while (*str != ch)
+//	{
+//		++str;
+//		if (*str == ch&&*str!='\0')
+//		{
+//			ptr = str;
+//			++str;
+//		}
+//		else if (*str == '\0')
+//		{
+//			return  ptr;
+//		}
+//	}
+//	
+//}
+//
+//test1()
+//{
+//	char arr[] = "welcome to this world!";
+//	int ret = my_strchr(arr, 'o');
+//	printf("ret=%d", ret);
+//}
+//test2()
+//{
+//	char arr[] = "welcome to this world!";
+//	char* ret = my_strrchr(arr, 'o');
+//	printf("ret=%s", ret);
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	system("pause");
+//	return 0;
+//}
+
+//# include <stdio.h>
+//char *my_strrstr(const char *s1, const char *s2)
+//{
+//	char *last = NULL;
+//	char *current = NULL;
+//	if (*s2)  //只有在s2不为空时才查找，若s2为空，返回NULL
+//	{
+//		current = strstr(s1, s2);  //查找s2在s1中第一次出现的位置
+//		while (current != NULL)
+//		{
+//			last = current;
+//			current = strstr(last + 1, s2);
+//		}
+//	}
+//	return last;
+//}
+//int main()
+//{
+//	char *str1 = "abcdefabcdef";
+//	char *str2 = "bcd";
+//	char * ret = my_strrstr(str1, str2);
+//	printf("ret=%s", ret);
+//	system("pause");
+//	return 0;
+//}
+
+#include "Con1.h"
+// 通讯录
+//1.声明结构体
+//3.实现
+int search(pcon con, char *pname)
+{
+	for (int i = 0; i < con->count; i++)
+	{
+     if (strcmp(con->dhb[i].name, pname) == 0)
+	  {
+		return i;
+	  }
+	}
+	return -1;
+}
+void init(pcon ppcon)    // 初始化
+{
+	ppcon->count = 0;
+}
+void add(pcon ppcon)
+{
+	if (ppcon->count >= 1000)
+	{
+	printf("电话本满了\n");
+	return;
+	}
+	printf("请输入姓名：");
+	scanf("%s", ppcon->dhb[ppcon->count].name);
+	printf("请输入性别："); 
+	scanf("%s", ppcon->dhb[ppcon->count].sex);
+	printf("请输入年龄：");
+	scanf("%d", &ppcon->dhb[ppcon->count].age);//&
+	printf("请输入电话：");
+	scanf("%s", ppcon->dhb[ppcon->count].tel);
+	printf("请输入地址：");
+	scanf("%s", ppcon->dhb[ppcon->count].idd);
+	ppcon->count++;
+	printf("添加联系人成功ok！\n");
+}
+void del(pcon ppcon)
+{
+	int ret;
+	int n;
+	char name[20];
+	printf("请输入要删除人的姓名：");
+
+	scanf("%s", name);
+	ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("是否确定要删除此联系人\n");
+		printf("是请按1，否请按0\n");
+		scanf("%d", &n);
+		if (n == 1)
+		{
+			for (int i =ret; i < ppcon->count; i++)
+			{
+				ppcon->dhb[i] = ppcon->dhb[i + 1];
+			}
+			printf("删除成功");
+			ppcon->count--;
+		}
+		else if (n == 0)
+			printf("删除失败");
+	}
+}
+void modify(pcon ppcon)
+{
+	char name[20];
+	printf("请输入要查找的人的姓名：");
+	scanf("%s", name);
+	int ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("%s", ppcon->dhb[ret].name);
+		printf("%s", ppcon->dhb[ret].sex);
+		printf("%d", ppcon->dhb[ret].age);
+		printf("%s", ppcon->dhb[ret].tel);
+		printf("%s", ppcon->dhb[ret].idd);
+	}
+	else
+	{
+		printf("此联系人不存在\n");
+	}
+}
+void fix(pcon ppcon)
+{
+	char name[20];
+	printf("请输入要修改的人的姓名：");
+	scanf("%s", name);
+	int ret = search(ppcon, name);
+	if (ret != -1)
+	{
+		printf("此联系人存在\n");
+		printf("姓名修改成：");
+		scanf("%s", ppcon->dhb[ret].name);
+		printf("性别修改成：");
+		scanf("%s", ppcon->dhb[ret].sex);
+		printf("年龄修改成：");
+		scanf("%d", &ppcon->dhb[ret].age);
+		printf("电话修改成：");
+		scanf("%s", ppcon->dhb[ret].tel);
+		printf("地址修改成：");
+		scanf("%s", ppcon->dhb[ret].idd);
+		printf("修改成功\n");
+	}
+	else
+		printf("此人不存在\n");
+
+}
+void show(pcon ppcon)
+
+{
+	printf("输出所有人信息：");
+	for (int i = 0; i < ppcon->count; i++)
+	{
+		printf("%s\n", ppcon->dhb[i].name);
+		printf("%s\n", ppcon->dhb[i].sex);
+		printf("%d\n", ppcon->dhb[i].age);//此处不许用再取地址，因为ppcon->dhb[i].age已经是int型的数字，加上&则是取12的地址了
+		printf("%s\n", ppcon->dhb[i].tel);
+		printf("%s\n", ppcon->dhb[i].idd);
+	}
+	printf("\n");
+}
+void clear(pcon ppcon)
+{
+	printf("清空所有联系人：");
+	/*for (int i = 0; i < p->count; i++)
+	{
+		p->dhb[i] = p->dhb[i + 1];
+	}*/
+	ppcon->count = 0;
+
+}
+void sort(pcon ppcon)
+{
+	for (int i = 0; i < ppcon->count - 1; i++)
+	{
+			for (int j = 0; j < ppcon->count - 1 - i; j++)
+		{
+				if (strcmp(ppcon->dhb[j].name, ppcon->dhb[j + 1].name)>0)
+			{
+				Peo tmp;
+				tmp = ppcon->dhb[j];
+				ppcon->dhb[j] = ppcon->dhb[j + 1];
+				ppcon->dhb[j + 1] = tmp;
+			}
+		}
+	
+	}
+	show(&ppcon);
+}
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+#include "Con1.h"
+void menu()
+
+{
+	printf("****      menu     ****\n");
+	printf("****1.add  2.delete****\n");
+	printf("****3.modify 4.fix   ****\n");
+	printf("****5.show 6.clear ****\n");
+	printf("****7.sort 0.exit  ****\n");
+}
+void test()
+{
+	Con con;
+	init(&con);
+	int input = 1;
+	
+	while (input)
+	{
+		menu();
+		printf("请选择操作选项：");
+		scanf("%d", &input);
+		switch (input)
+		{
+		case ADD:add(&con); break;
+		case DEL:del(&con); break;
+		case MODIFY:modify(&con); break;
+		case FIX:fix(&con); break;
+		case SHOW:show(&con); break;
+		case CLEAR:clear(&con); break;
+		case SORT:sort(&con); break;
+		case EXIT:exit(1); break;
+		}
+	}
+}
+int main()
+{
+	test();
+	system("pause");
+	return 0;
+}

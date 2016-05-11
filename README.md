@@ -2771,3 +2771,338 @@ void CommentConvert()    //转换文件的读取与写入
 	fclose(pWrite);
 }
 
+23.顺序表（静态）
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include <string.h>
+#include <assert.h>
+#include <stdio.h>
+#include <windows.h>
+
+#define MAX_SIZE 5
+typedef int DataType;
+typedef unsigned int size_t;
+
+typedef struct SeqList
+{
+	DataType array[MAX_SIZE];
+	size_t size;
+}SeqList, *PSeqList;
+
+
+void InitSeqList(PSeqList pSeqList);
+
+// 顺序表尾插
+// 设计函数原型
+// 参数检测
+// 边界条件考虑
+// 逻辑操作
+// 尾插
+void PushBack(PSeqList pSeqList, DataType data);
+void PopBack(PSeqList pSeqList);
+void PrintSeqList(PSeqList pSeqList);
+void PushFront(PSeqList pSeqList, DataType data);
+void PopFront(PSeqList pSeqList);
+
+// 任意位置插入
+void Insert(PSeqList pSeqList, size_t pos, DataType data);
+
+// 在顺序表中查找元素data
+int Find(PSeqList pSeqList, DataType data);
+
+// 删除顺序表中pos位置上的元素
+void Erase(PSeqList pSeqList, size_t pos);
+
+//移除顺序表中的元素data
+void Remove(PSeqList pSeqList, DataType data);
+
+// 移除顺序表中所有元素data
+void RemoveAll(PSeqList pSeqList, DataType data);
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include "SeqList.h"
+
+
+
+void InitSeqList(PSeqList pSeqList)
+{
+	assert(pSeqList);
+	memset(pSeqList, 0,sizeof(DataType)* MAX_SIZE);
+	pSeqList->size = 0;
+}
+void PushBack(PSeqList pSeqList, DataType data)
+{
+	assert(pSeqList);
+	if (MAX_SIZE==pSeqList->size)
+	{
+		printf("顺序表已满！\n");
+		return;
+	}
+	pSeqList->array[pSeqList->size] = data;
+	pSeqList->size++;
+ //等价于	pSeqList->array[pSeqList->size++] = data;
+
+}
+void PopBack(PSeqList pSeqList)
+{
+	assert(pSeqList);
+	if (0 == pSeqList->size)
+	{
+		printf("顺序表为空！");
+		return;
+	}
+	pSeqList->size--;
+}
+void PrintSeqList(PSeqList pSeqList)
+{
+	size_t idex = 0;
+	for (; idex < pSeqList->size; idex++)
+	{
+		printf("%d ", pSeqList->array[idex]);
+	}
+	printf("\n");
+}
+void PushFront(PSeqList pSeqList, DataType data)
+{
+	assert(pSeqList);
+	size_t idex = pSeqList->size;
+	if (MAX_SIZE == pSeqList->size)
+	{
+		printf("顺序表已满！\n");
+		return;
+	}
+	for (; idex >0; --idex)
+	{
+		pSeqList->array[idex] = pSeqList->array[idex-1];
+		
+	}
+	pSeqList->array[0] = data;
+	pSeqList->size++;
+
+}
+void PopFront(PSeqList pSeqList)
+{
+	assert(pSeqList);
+	size_t idex =1;
+	if (0 == pSeqList->size)
+	{
+		printf("顺序表已空！\n");
+		return;
+	}
+	for (; idex <pSeqList->size; ++idex)
+	{
+		pSeqList->array[idex-1] = pSeqList->array[idex];
+	}
+	pSeqList->size--;
+}
+void Insert(PSeqList pSeqList, size_t pos, DataType data)
+{
+	assert(pSeqList);
+	int idex =(int) pSeqList->size;
+	if (MAX_SIZE == pSeqList->size)
+	{
+		printf("顺序表已满\n");
+		return;
+	}
+	if (MAX_SIZE > pSeqList->size && ((pos >= 0) && (pos < pSeqList->size)))
+	{
+		for (; idex >pos; idex--)   //有= 前越界
+		{
+			pSeqList->array[idex] = pSeqList->array[idex-1];  
+		}
+		pSeqList->array[pos] = data;
+		pSeqList->size++;
+	}
+}
+int  Find(PSeqList pSeqList, DataType data)
+{
+	assert(pSeqList);
+	size_t idex = 0;
+	for (; idex < pSeqList->size; ++idex)
+	{
+		if (pSeqList->array[idex] == data)
+		{
+			return idex;
+		}
+	}
+	return -1;
+
+}
+
+void Erase(PSeqList pSeqList, size_t pos)
+{
+	assert(pSeqList);
+	size_t idex = pos;
+	if (pSeqList->size == 0)
+	{
+		printf("顺序表已空！\n");
+		return;
+	}
+	if (MAX_SIZE >= pSeqList->size && ((pos >= 0) && (pos < pSeqList->size)))
+	{
+		int ret=Find(pSeqList,pSeqList->array[pos]);
+		if (ret != -1)
+		{
+			for (; idex < pSeqList->size-1; ++idex)
+			{
+				pSeqList->array[idex] = pSeqList->array[idex+1];
+			}
+		}
+	}
+	pSeqList->size--;
+
+}
+void Remove(PSeqList pSeqList, DataType data)
+{
+	assert(pSeqList);
+	if (0 == pSeqList->size)
+	{
+		printf("顺序表已空\n");
+		return;
+	}
+	size_t ret = Find(pSeqList, data);
+	if (ret != pSeqList->size)
+	{
+		Erase(pSeqList, ret);
+	}
+	else if (ret==-1)
+	{
+		printf("没有找到该数据\n");
+		return;
+	}
+}
+void RemoveAll(PSeqList pSeqList, DataType data)
+{
+	assert(pSeqList);
+	size_t idex = 0;
+	size_t tmp = 0;
+	if (0 == pSeqList)
+	{
+		printf("顺序表已空\n");
+		return;
+	}
+	for (; idex < pSeqList->size; idex++)
+	{
+		if (pSeqList->array[idex] == data)
+		{
+			for (tmp = idex; tmp < pSeqList->size - 1; tmp++)
+			{
+				pSeqList->array[tmp] = pSeqList->array[tmp+1];
+			}
+			pSeqList->size--;
+			idex--;
+		}
+	}
+
+}
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+#include "SeqList.h"
+
+SeqList seqList;
+void Test1()
+{
+	InitSeqList(&seqList);
+
+	PushBack(&seqList, 1);
+	PushBack(&seqList, 2);
+	PushBack(&seqList, 3);
+	PushBack(&seqList, 4);
+	PushBack(&seqList, 5);
+	//PushBack(&seqList, 6);
+
+
+	PrintSeqList(&seqList);
+
+	PopBack(&seqList);
+	PopBack(&seqList);
+	PopBack(&seqList);
+	PopBack(&seqList);
+	PopBack(&seqList);
+	PopBack(&seqList);
+
+	PrintSeqList(&seqList);
+}
+void Test2()
+{
+	InitSeqList(&seqList);
+
+	PushFront(&seqList, 1);
+	PushFront(&seqList, 2);
+	PushFront(&seqList, 3);
+	PushFront(&seqList, 4);
+	PushFront(&seqList, 5);
+
+	PrintSeqList(&seqList);
+
+	PopFront(&seqList);
+	PopFront(&seqList);
+	PopFront(&seqList);
+	PopFront(&seqList);
+
+	PrintSeqList(&seqList);
+}
+void Test3()
+{
+	InitSeqList(&seqList);
+
+	PushBack(&seqList, 1);
+	PushBack(&seqList, 2);
+	//PushBack(&seqList, 3);
+	//PushBack(&seqList, 4);
+	//PushBack(&seqList, 5);
+
+	PrintSeqList(&seqList);
+
+	Insert(&seqList, 0, 10);
+	PrintSeqList(&seqList);
+
+	Insert(&seqList, 1, 20);
+	PrintSeqList(&seqList);
+
+	Insert(&seqList, 4, 30);
+	PrintSeqList(&seqList);
+
+
+	//Find(&seqList, 10);
+	//Find(&seqList, 50);
+
+	Erase(&seqList, 2);
+
+	
+	PrintSeqList(&seqList);
+}
+void Test4()
+{
+	InitSeqList(&seqList);
+
+	PushBack(&seqList, 1);
+	PushBack(&seqList, 2);
+	PushBack(&seqList, 3);
+	PushBack(&seqList, 4);
+	PushBack(&seqList, 3);
+
+	PrintSeqList(&seqList);
+
+	Remove(&seqList, 2);
+	PrintSeqList(&seqList);
+
+
+	RemoveAll(&seqList, 3);
+	PrintSeqList(&seqList);
+}
+int main()
+{
+	//Test1();
+	//Test2();
+	//Test3();
+	Test4();
+
+	system("pause");
+
+	return 0;
+}

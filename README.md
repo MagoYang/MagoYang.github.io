@@ -2615,3 +2615,159 @@ int main()
 	return 0;
 }
 
+22.注释转换
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include "CommentConvert.h"
+
+StateType state;
+                 
+void DoNullState(FILE* read, FILE* write)
+{
+	int ch1 = fgetc(read);
+	int ch2 = 0;
+	switch (ch1)
+	{
+	case '/':
+		ch2 = fgetc(read);
+		if (ch2 == '*')
+		{
+			fputc(ch1, write);
+			fputc('/', write);
+			state = C_STATE;
+		}
+		else if (ch2 == '/')
+		{
+			fputc(ch1, write);
+			fputc(ch2, write);
+			state = CPP_STATE;
+		}
+		else
+		{
+			fputc(ch1, write);
+			fputc(ch2, write);
+		}
+		break;
+	case EOF:
+		fputc(ch1,write);
+		state = END_STATE;
+		break;
+	default:
+		fputc(ch1, write);
+		break;
+	}
+}
+void DoCState(FILE* read, FILE* write)
+{
+	int ch1 = fgetc(read);
+	int ch2 = 0;
+	int ch3 = 0;
+	switch (ch1)
+	{
+	case '*':
+		ch2 = fgetc(read);
+		if (ch2 == '/')  //舍弃*/
+		{
+			ch3 = fgetc(read);
+			if (ch3 == '\n')
+			{
+				ungetc(ch3, read);
+			}
+			else
+			{
+				ungetc(ch3, read);
+				fputc('\n', write);
+			}
+			state = NULL_STATE;
+		}
+		else 
+		{
+			fputc(ch1, write);
+			ungetc(ch2,read);   //把读取的第二个字符放回去
+		}
+		break;
+
+	case '\n':
+		fputc(ch1, write);
+		fputc('/', write);
+		fputc('/', write);
+		break;
+	//case EOF:            //不可以
+	//	fputc(ch1, write);
+	//	state = END_STATE;
+	//	break;
+	default:
+		fputc(ch1, write);
+		break;
+	}
+}
+void DoCppState(FILE* read, FILE* write)
+{
+	int ch1 = fgetc(read);
+	int ch2 = 0;
+	switch (ch1)
+	{
+	case '\n':
+		fputc(ch1, write);
+		state = NULL_STATE;
+		break;
+	/*case '/':
+		ch2 = fgetc(read);
+		if (ch2 == '*')
+		{
+			state = C_STATE;
+		}
+		break;*/   //在cpp状态下面时直接输出
+
+	case EOF:
+		fputc(ch1, write);
+		state = END_STATE;
+		break;
+	default:
+
+		fputc(ch1, write);
+		break;
+	}
+}
+
+void  ConvertWork(FILE* read, FILE* write)
+{
+	state = NULL_STATE;
+	while (state != END_STATE)
+	{
+		switch (state)
+		{
+		case NULL_STATE:
+			DoNullState(read, write);
+			break;
+		case C_STATE:
+			DoCState(read, write);
+			break;
+		case CPP_STATE:
+			DoCppState(read, write);
+			break;
+		}
+	}
+}
+
+void CommentConvert()    //转换文件的读取与写入
+{
+	FILE* pRead = fopen(INPUTFILE, "r");
+	if (pRead == NULL)
+	{
+		perror("open file for read");
+		exit(EXIT_FAILURE);
+	}
+	FILE* pWrite = fopen(OUTPUTFILE, "w");
+	if (pWrite == NULL)
+	{
+		fclose(pRead);
+		perror("open file for write");
+		exit(EXIT_FAILURE);
+	}
+	ConvertWork(pRead,pWrite);
+	fclose(pRead);
+	fclose(pWrite);
+}
+

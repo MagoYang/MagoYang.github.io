@@ -2830,7 +2830,7 @@ void RemoveAll(PSeqList pSeqList, DataType data);
 void InitSeqList(PSeqList pSeqList)
 {
 	assert(pSeqList);
-	memset(pSeqList, 0,sizeof(DataType)* MAX_SIZE);
+	memset(pSeqList->array, 0,sizeof(DataType)* MAX_SIZE);
 	pSeqList->size = 0;
 }
 void PushBack(PSeqList pSeqList, DataType data)
@@ -2858,8 +2858,8 @@ void PopBack(PSeqList pSeqList)
 }
 void PrintSeqList(PSeqList pSeqList)
 {
-	size_t idex = 0;
-	for (; idex < pSeqList->size; idex++)
+	int idex = 0;
+	for (; idex <(int) pSeqList->size; idex++)
 	{
 		printf("%d ", pSeqList->array[idex]);
 	}
@@ -2868,7 +2868,7 @@ void PrintSeqList(PSeqList pSeqList)
 void PushFront(PSeqList pSeqList, DataType data)
 {
 	assert(pSeqList);
-	size_t idex = pSeqList->size;
+	int idex = (int)pSeqList->size;
 	if (MAX_SIZE == pSeqList->size)
 	{
 		printf("顺序表已满！\n");
@@ -2886,13 +2886,13 @@ void PushFront(PSeqList pSeqList, DataType data)
 void PopFront(PSeqList pSeqList)
 {
 	assert(pSeqList);
-	size_t idex =1;
+	int idex =1;
 	if (0 == pSeqList->size)
 	{
 		printf("顺序表已空！\n");
 		return;
 	}
-	for (; idex <pSeqList->size; ++idex)
+	for (; idex <(int)pSeqList->size; ++idex)
 	{
 		pSeqList->array[idex-1] = pSeqList->array[idex];
 	}
@@ -2920,8 +2920,8 @@ void Insert(PSeqList pSeqList, size_t pos, DataType data)
 int  Find(PSeqList pSeqList, DataType data)
 {
 	assert(pSeqList);
-	size_t idex = 0;
-	for (; idex < pSeqList->size; ++idex)
+	int idex = 0;
+	for (; idex < (int)pSeqList->size; ++idex)
 	{
 		if (pSeqList->array[idex] == data)
 		{
@@ -2935,18 +2935,18 @@ int  Find(PSeqList pSeqList, DataType data)
 void Erase(PSeqList pSeqList, size_t pos)
 {
 	assert(pSeqList);
-	size_t idex = pos;
+	int idex = pos;
 	if (pSeqList->size == 0)
 	{
 		printf("顺序表已空！\n");
 		return;
 	}
-	if (MAX_SIZE >= pSeqList->size && ((pos >= 0) && (pos < pSeqList->size)))
+	if  ((pos >= 0) && (pos < pSeqList->size))
 	{
 		int ret=Find(pSeqList,pSeqList->array[pos]);
 		if (ret != -1)
 		{
-			for (; idex < pSeqList->size-1; ++idex)
+			for (; idex < (int)pSeqList->size-1; ++idex)
 			{
 				pSeqList->array[idex] = pSeqList->array[idex+1];
 			}
@@ -2963,8 +2963,8 @@ void Remove(PSeqList pSeqList, DataType data)
 		printf("顺序表已空\n");
 		return;
 	}
-	size_t ret = Find(pSeqList, data);
-	if (ret != pSeqList->size)
+	int ret = Find(pSeqList, data);
+	if (ret != (int)pSeqList->size)
 	{
 		Erase(pSeqList, ret);
 	}
@@ -2977,18 +2977,18 @@ void Remove(PSeqList pSeqList, DataType data)
 void RemoveAll(PSeqList pSeqList, DataType data)
 {
 	assert(pSeqList);
-	size_t idex = 0;
-	size_t tmp = 0;
+	int idex = 0;
+	int tmp = 0;
 	if (0 == pSeqList)
 	{
 		printf("顺序表已空\n");
 		return;
 	}
-	for (; idex < pSeqList->size; idex++)
+	for (; idex < (int)pSeqList->size; idex++)
 	{
 		if (pSeqList->array[idex] == data)
 		{
-			for (tmp = idex; tmp < pSeqList->size - 1; tmp++)
+			for (tmp = idex; tmp < (int)pSeqList->size - 1; tmp++)
 			{
 				pSeqList->array[tmp] = pSeqList->array[tmp+1];
 			}

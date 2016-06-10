@@ -3106,3 +3106,474 @@ int main()
 
 	return 0;
 }
+
+
+24.搜索二叉树  BinarySearchTree
+
+"BinarySearchTree.h"
+
+#pragma once
+#include <iostream>
+using namespace std;
+
+
+//BSTNode结点数据结构
+template <class K, class V>
+struct BSTNode
+{
+	//KV
+	BSTNode<K, V>* _left;
+	BSTNode<K, V>* _right;
+
+	K _key;
+	V _value;
+
+	BSTNode(const K& key, const V& value)
+		:_key(key)
+		, _value(value)
+		, _left(NULL)
+		, _right(NULL)
+	{}
+};
+
+//BSTree模板类的封装
+template <class K, class V>
+class BSTree
+{
+	typedef BSTNode<K, V> Node;
+public:
+	//非递归
+	BSTree();  //默认构造函数
+
+	//BSTree()
+	//	:_root(NULL)
+	//{}
+	//~BSTree();
+
+	bool Insert(const K& key, const V& value); //插入
+	Node* Find(const K& key);                 //查找
+	bool Remove(const K& key);               //删除
+	//void InOrder(Node* _root);            //中序遍历找左最大或右最小
+
+
+	//递归
+	bool Insert_R(const K& key, const V& value);
+	Node* Find_R(const K& key);
+	bool Remove_R(const K& key);
+
+protected:
+	//非递归
+	bool _Insert(const K& key, const V& value);
+	Node* _Find(const K& key);
+	bool _Remove(Node* root, const K& key);
+
+
+	//递归
+	bool _Insert_R(Node*& root, const K& key, const V& value);
+	Node* _Find_R(Node*& root, const K& key);
+	bool _Remove_R(Node*& root, const K& key);
+
+protected:
+	Node* _root;
+};
+
+
+"BinarySearchTree.cpp"
+
+#include "BinarySearchTree.h"
+
+
+template <class K, class V>
+BSTree<K, V>::BSTree()
+:_root(NULL)
+{}
+
+//非递归
+template <class K, class V>
+bool BSTree<K, V>::Insert(const K& key, const V& value)
+{
+	return _Insert(key, value);
+}
+
+template <class K, class V>
+bool BSTree<K, V>::_Insert(const K& key, const V& value)
+{
+	//1.空  2.非空
+	if (_root == NULL)
+	{
+		_root = new Node(key, value);
+		return true;
+	}
+	Node* parent = NULL;
+	Node* cur = _root;
+	while (cur)
+	{
+		if (key < cur->_key)
+		{
+			parent = cur;
+			cur = cur->_left;
+		}
+		else if (key>cur->_key)
+		{
+			parent = cur;
+			cur = cur->_right;
+		}
+		else
+			return false;
+	}
+	if (parent->_left == NULL&&key < parent->_key)
+	{
+		parent->_left = new Node(key, value);
+	}
+	else if (parent->_right == NULL&&key > parent->_key)
+	{
+		parent->_right = new Node(key, value);
+	}
+	return true;
+}
+
+template <class K, class V>
+BSTNode<K, V>* BSTree<K, V>::Find(const K& key)                //查找
+{
+	return _Find(key);
+}
+template <class K, class V>
+BSTNode<K, V>* BSTree<K, V>::_Find(const K&key)
+{
+	//1.空 2.非空
+	Node*cur = _root;
+	while (cur)
+	{
+		if (key < cur->_key)
+		{
+			cur = cur->_left;
+		}
+		else if (key>cur->_key)
+		{
+			cur = cur->_right;
+		}
+		else
+			return cur;
+	}
+	return NULL;
+
+}
+
+
+
+template <class K, class V>
+bool  BSTree<K, V>::Remove(const K& key)
+{
+	return _Remove(_root, key);
+}
+template <class K, class V>
+bool BSTree<K, V>:: _Remove(Node* root, const K& key)
+{
+	//1.空  2.非空（1.左右都为空  2.左或右为空  3.左右都不为空）
+	if (root== NULL)
+	{
+		return false;
+	}
+
+	Node* cur = root;
+	Node* parent = NULL;
+	Node* del = NULL;
+	while (cur)
+	{
+		if (key < cur->_key)
+		{
+			parent = cur;
+			cur = cur->_left;
+		}
+		else if (key>cur->_key)
+		{
+			parent = cur;
+			cur = cur->_right;
+		}
+		else
+		{
+			del = cur;
+			if (cur->_left == NULL&&cur->_right == NULL)  //1. 左右都为空
+			{
+				if (parent&&parent->_left == cur)
+				{
+					parent->_left = NULL;
+				}
+				else if (parent&&parent->_right == cur)
+				{
+					parent->_right = NULL;
+				}
+				else
+				{
+					root = NULL;
+				}
+			}
+			else if (cur->_left == NULL) //2. 左为空
+			{
+				if (parent&&parent->_left == cur)
+				{
+					parent->_left = cur->_right;
+				}
+				else if (parent&&parent->_right == cur)
+				{
+					parent->_right = cur->_right;
+				}
+				else
+				{
+					root = cur->_right;
+				}
+
+			}
+			else if (cur->_right == NULL)//2. 右为空
+			{
+
+				if (parent&&parent->_left == cur)
+				{
+					parent->_left = cur->_left;
+				}
+				else if (parent&&parent->_right == cur)
+				{
+					parent->_right = cur->_left;
+				}
+				else
+				{
+					root = cur->_left;
+				}
+			}
+			else  //3.左右都不为空
+			{
+				//(1)找左子树的最大结点
+				Node* maxleft = cur->_left;
+				Node* parent = NULL;//   Node* parent = cur;
+				while (maxleft->_right)
+				{
+					parent = maxleft;
+					maxleft = maxleft->_right;
+				}
+				del = maxleft;
+				swap(cur->_key, maxleft->_key);
+				swap(cur->_value, maxleft->_value);
+				//判断最大左子树是其父节点的左子树还是右子树
+				if (parent&&parent->_left == maxleft)
+				{
+					parent->_left = maxleft->_left;
+				}
+				else if (parent&&parent->_right == maxleft)
+				{
+					parent->_right = maxleft->_left;
+				}
+				else
+				{
+					cur->_left = NULL;
+				}
+
+
+			}
+
+			delete del;
+			return true;
+		}
+	}
+	return false;
+}
+
+
+//递归
+
+template <class K, class V>
+bool BSTree<K, V>::Insert_R(const K& key, const V& value)
+{
+	return _Insert_R(_root, key, value);
+}
+template <class K, class V>
+bool BSTree<K, V>::_Insert_R(Node*& root, const K& key, const V& value)
+{
+	//1.空 2.非空
+	if (root == NULL)
+	{
+		root = new Node(key, value);
+		return true;
+	}
+	if (key < root->_key)
+	{
+		_Insert_R(root->_left, key, value);
+	}
+	else if (key>root->_key)
+	{
+		_Insert_R(root->_right, key, value);
+
+	}
+	else
+	{
+		return false;
+	}
+	return false;
+}
+
+
+template <class K, class V>
+BSTNode<K, V>* BSTree<K, V>::Find_R(const K& key)                //查找
+{
+	return _Find_R(_root, key);
+}
+template <class K, class V>
+BSTNode<K, V>* BSTree<K, V>::_Find_R(Node*& root, const K&key)
+{
+	//1.空2.非空
+	Node* cur = root;
+	if (root == NULL)
+		return  NULL;
+	if (key < cur->_key)
+		_Find_R(cur->_left, key);
+	else if (key>cur->_key)
+		_Find_R(cur->_right, key);
+	else
+		return root;
+	
+}
+//template <class K, class V>             //另外一种实现方法
+//Node* Find_R(const K& key)
+//{
+//	//1.空2.非空
+//	Node* cur = _root;
+//	if (key < cur->_key)
+//	{
+//		Find_R(cur->_left->key);
+//	}
+//	else if (key>cur->_key)
+//	{
+//		Find_R(cur->_right->key);
+//	}
+//	else
+//	{
+//		return cur;
+//	}
+//	return NULL;
+//}
+
+
+template <class K, class V>
+bool  BSTree<K, V>::Remove_R(const K& key)
+{
+	return _Remove_R(_root, key);
+}
+template <class K, class V>
+bool BSTree<K, V>::_Remove_R(Node*& root, const K&key)
+{
+	//1.空  2.非空（1.左右都为空  2.左或右为空  3.左右都不为空）
+	if (root == NULL)
+	{
+		return false;
+	}
+	if (key < root->_key)
+	{
+		_Remove_R(root->_left, key);
+	}
+	else if (key>root->_key)
+	{
+		_Remove_R(root->_right, key);
+	}
+	else
+	{
+		Node* del = root;
+		//Node*parent = NULL;
+		if (root->_left ==NULL&&root->_right == NULL)//1.左右都为空
+		{
+			root = NULL;
+		}
+		else if (root->_left == NULL)//2.左为空
+		{
+			root = root->_right;
+		}
+		else if (root->_right == NULL)//2.右为空
+		{
+			root = root->_left;
+
+		}
+		else  //3.左右都不为空
+		{
+			//找左子树最大结点
+			Node* maxleft = root->_left;
+			Node* parent = NULL;         //Node* parent = root;
+			while (maxleft->_right)
+			{
+				parent = maxleft;
+				maxleft = maxleft->_right;
+			}
+			del = maxleft;
+			swap(root->_key, maxleft->_key);
+			swap(root->_value, maxleft->_value);
+
+			//判断最大结点是它父亲结点的左孩子还是右孩子  //即处理交换之后的删除工作，否则没有删除结点
+			if (parent&&parent->_left == maxleft)
+			{
+				parent->_left = maxleft->_left;
+			}
+			else if (parent&&parent->_right == maxleft)
+			{
+				parent->_right = maxleft->_left;
+			}
+			else
+			{
+				root->_left = NULL;  //parent==NULL,即左结点只有一个，
+			}
+		}
+		delete del;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+	
+}
+
+"test.cpp"
+
+#include "BinarySearchTree.h"
+#include "BinarySearchTree.cpp"
+
+void Test1()
+{
+
+
+	BSTree<int, int> t1;
+	t1.Insert_R(5, 0);
+	t1.Insert_R(3, 0);
+	t1.Insert_R(4, 0);
+	t1.Insert_R(1, 0);
+	t1.Insert_R(7, 0);
+	t1.Insert_R(8, 0);
+	t1.Insert_R(2, 0);
+	t1.Insert_R(6, 0);
+	t1.Insert_R(0, 0);
+	t1.Insert_R(9, 0);
+
+	t1.Find_R(5);
+	t1.Find_R(0);
+	t1.Find_R(4);
+	t1.Find_R(23);
+
+
+
+	t1.Remove(4);
+	t1.Remove(3);
+	t1.Remove(1);
+	t1.Remove(7);
+	t1.Remove(8);
+	t1.Remove(2);
+	t1.Remove(6);
+	t1.Remove(0);
+	t1.Remove(5);
+	t1.Remove(9);
+
+}
+
+int main()
+{
+
+	Test1();
+	system("pause");
+	return 0;
+}
+

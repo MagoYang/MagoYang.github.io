@@ -3577,3 +3577,591 @@ int main()
 	return 0;
 }
 
+
+
+//文件压缩
+
+
+
+“heap.h”
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include <vector>
+#include <cassert>
+
+template<class T>
+struct Less
+{
+	bool operator() (const T& l, const T& r)
+	{
+		return l < r;
+	}
+};
+
+template<class T>
+struct Greater
+{
+	bool operator() (const T& l, const T& r)
+	{
+		return l > r;
+	}
+};
+
+template<class T, class Compare = Less>
+//template<class T, template<class> class Compare = Less>
+class Heap
+{
+public:
+	Heap()
+		:_a(NULL)
+	{}
+
+	Heap(const T* a, size_t size)
+	{
+		_a.reserve(size);
+		for (size_t i = 0; i < size; ++i)
+		{
+			_a.push_back(a[i]);
+		}
+
+		// 建堆
+		for (int i = (_a.size() - 2) / 2; i >= 0; --i)
+		{
+			_AdjustDown(i);
+		}
+	}
+
+	Heap(vector<T>& a)
+	{
+		_a.swap(a);
+
+		// 建堆
+		for (int i = (_a.size() - 2) / 2; i >= 0; --i)
+		{
+			_AdjustDown(i);
+		}
+	}
+
+	void Push(const T& x)
+	{
+		_a.push_back(x);
+
+		_AdjustUp(_a.size() - 1);
+	}
+
+	void Pop()
+	{
+		size_t size = _a.size();
+		assert(size > 0);
+
+		swap(_a[0], _a[size - 1]);
+		_a.pop_back();
+		_AdjustDown(0);
+	}
+
+	T& Top()
+	{
+		assert(!_a.empty());
+		return _a[0];
+	}
+
+	size_t size()
+	{
+		assert(!_a.empty());
+		return (_a.size());
+
+	}
+protected:
+	void _AdjustUp(int child)
+	{
+		int parent = (child - 1) / 2;
+		//while(parent>=0)
+		while (child > 0)
+		{
+			Compare com;
+			//Compare<T> com;
+			//if (_a[child] > _a[parent])
+			if (com(_a[child], _a[parent]))
+			{
+				swap(_a[child], _a[parent]);
+				child = parent;
+				parent = (child - 1) / 2;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	void _AdjustDown(size_t parent)
+	{
+		size_t child = parent * 2 + 1;
+		while (child < _a.size())
+		{
+			// 选出孩子里面大的那一个
+			//Compare<T> com;
+			Compare com;
+			//if (child+1 < _a.size() &&_a[child+1] > _a[child])
+			if (child + 1 < _a.size()
+				&& com(_a[child + 1], _a[child]))
+			{
+				++child;
+			}
+
+			// 如果父亲小于孩子，则交换并继续往下调整
+			// 否则调堆完成
+
+			//if(_a[child] > _a[parent])
+			if (com(_a[child], _a[parent]))
+			{
+				swap(_a[parent], _a[child]);
+				parent = child;
+				child = 2 * parent + 1;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+protected:
+	vector<T> _a;
+};
+
+”Huffman.h“
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+#include "Heap.h"
+
+
+template <class T>
+struct  HuffmanNode
+{
+	HuffmanNode<T>*_left;    //左孩子
+	HuffmanNode<T>*_right;  //右孩子
+	T _weight;        //权值
+
+	HuffmanNode(const T&weight)
+		: _left(NULL)
+		, _right(NULL)
+		, _weight(weight)
+	{}
+
+};
+
+
+//构建哈夫曼树                (利用小堆构建哈夫曼树)
+template <class T>
+class HuffmanTree
+{
+	typedef HuffmanNode<T> Node;
+public:
+	HuffmanTree()
+		:_root(NULL)
+	{}
+
+	HuffmanTree(const T*a, size_t size, const T& invalid)     //invalid代表非法值，若为非法值，则不构建哈夫曼树
+	{
+		_root = CreateTree(a, size, invalid);
+	}
+
+	Node* GetRootNode()
+	{
+		return _root;
+	}
+public:
+	Node* CreateTree(const T*a, size_t size, const T& invalid)
+	{
+		struct Compare
+		{
+			bool operator()(const Node*l, const Node*r)
+			{
+				return (l->_weight < r->_weight);
+			}
+		};
+		Heap <Node*, Compare> minHeap;       //仿函数
+		for (int i = 0; i <(int)size; ++i)
+		{
+			if (a[i] != invalid)
+			{
+				minHeap.Push(new Node(a[i]));
+			}
+
+		}
+		//小堆的top结点的权值必是最小的，每次选出小堆的top构造哈夫曼树的结点
+		while (minHeap.size()>1)
+		{
+			Node* left = minHeap.Top();
+			minHeap.Pop();
+			Node* right = minHeap.Top();
+			minHeap.Pop();
+			Node* parent = new Node(left->_weight + right->_weight);   //哈夫曼树特点，父结点是两个子结点和
+			parent->_left = left;
+			parent->_right = right;
+			minHeap.Push(parent);
+
+		}
+		return minHeap.Top();
+	}
+
+protected:
+	HuffmanNode<T>* _root;
+};
+
+”compress.h“
+#define _CRT_SECURE_NO_WARNINGS 1
+#include <iostream>
+using namespace std;
+#include <cassert>
+#include "HuffmanTree.h"
+#include <string>
+#include <windows.h>
+
+
+
+//1.统计字符次数   2.构建哈夫曼树（堆）   3.生成哈夫曼编码 4. 读取源文件字符压缩 5.解压
+//哈夫曼树根结点的权值就是源文件读入的个数
+
+//统计字符次数
+typedef unsigned long long  LongType;
+struct CharInfo
+{
+	unsigned char _ch;  //字符
+	LongType _count;   //出现次数
+	string _code;      //Huffman code
+
+
+	CharInfo()
+		:_ch(0)
+		, _count(0)
+	{}
+
+	CharInfo(LongType count)
+		:_ch(0)
+		, _count(count)
+	{}
+
+	bool operator!=(const CharInfo&info) const
+	{
+		return _count != info._count;
+	}
+
+	CharInfo operator+(const CharInfo&info) const
+	{
+		return CharInfo(_count + info._count);
+	}
+
+	bool operator<(const CharInfo&info) const      //重载运算符 <
+	{
+		return _count < info._count;
+	}
+
+
+};
+
+template <class T>
+class FileCompress
+{
+	typedef HuffmanNode<T> Node;
+public:
+	FileCompress()
+	{
+		for (size_t i = 0; i < 256; ++i)
+		{
+			_infos[i]._ch = i;
+			_infos[i]._count = 0;
+		}
+	}
+public:
+	void Compress(const char* filename)  //文件压缩
+	{
+		//1. 读取文件统计次数
+		assert(filename);
+		FILE*fOut = fopen(filename, "rb");
+		assert(fOut);
+		char ch = fgetc(fOut);
+		while (!feof(fOut))
+		{
+			_infos[(unsigned char)ch]._count++;
+			ch = fgetc(fOut);              //如何保证相同呢- 映射
+		}
+
+		//2.构建huffman并生成huffman编码
+		CharInfo invalid(0);
+		HuffmanTree<CharInfo> tree(_infos, 256, invalid);
+		string code;
+		GenerateHuffmanCode(tree.GetRootNode(), code);
+		cout << endl;
+
+		//3.将编码写入压缩文件中
+		string compressfilename = filename;  //压缩文件名称
+		compressfilename += ".compress";
+		FILE*fIn = fopen(compressfilename.c_str(), "wb");  //c_str():将二进制码转换为c的字符串
+		assert(fIn);
+	
+		fseek(fOut, 0, SEEK_SET);  //定位到文件起始的位置
+		ch = fgetc(fOut);
+		int pos = 0;//标记位置
+		char value = 0;
+		while (!feof(fOut))
+		{
+			
+			string& code = _infos[(unsigned char)ch]._code;
+	//cout << code << "->";
+			for (size_t i = 0; i < code.size(); ++i)
+			{
+				value <<= 1;
+
+				if (code[i] == '1')
+				{
+					value |= 1;
+				}
+
+				if (++pos == 8)
+				{
+					//cout<<"["<<value<<"]";
+					fputc(value, fIn);
+					pos = 0;
+					value = 0;
+				}
+			}
+
+			ch = fgetc(fOut);
+			//cout << ch;
+		}
+
+		if (pos)   //残缺没满8位
+		{
+			value <<= (8 - pos);
+			fputc(value, fIn);
+		}
+
+		cout << endl;
+		//4.将huffman树的信息写入配置文件中
+		string configfilename = filename;
+		configfilename += ".config";
+		FILE*fInConfig = fopen(configfilename.c_str(), "wb");
+		assert(fInConfig);
+		char buffer[128];  //buffer内容将为 12    作为一个整体的串作为配置文件
+		string str;
+		for (size_t i = 0; i < 256; ++i)
+		{
+			if (_infos[i]._count>0)
+			{
+				str += _infos[i]._ch;
+				str += ",";
+				str += _itoa((int)_infos[i]._count, buffer, 10);
+				//sprintf(buffer, "%d", _infos[i]._count);
+				//str += buffer;
+				str += '\n';
+
+			}
+			fputs(str.c_str(), fInConfig);
+			str.clear();   //置空，刷新  buffer清零
+		}
+		fclose(fInConfig);
+		fclose(fOut);
+		fclose(fIn);
+	}
+	void UnCompress(const char*filename)  //文件解压
+	{
+		// 1.读取配置文件中Huffman树的信息  直接写编码？
+		string configfilename = filename;
+		configfilename += ".config";
+		FILE* fOutConfig = fopen(configfilename.c_str(), "rb");
+		assert(fOutConfig);
+
+		string str;
+		while (ReadLine(fOutConfig, str))
+		{
+			if (!str.empty())
+			{
+				//sscanf(line.c_str(), "%s,%d", ch, appearCount);
+
+				_infos[(unsigned char)str[0]]._count = atoi(str.substr(2).c_str());
+				//string a=s.substr(0,5);即获得字符串s中从第0位开始长度为5的字符串，默认是的长度从开始到尾结束
+				str.clear();
+			}
+			else
+			{
+				str += '\n';
+			}
+		}
+
+		// 2.读出配置信息，重建Huffman树
+		CharInfo invalid(0);
+		HuffmanTree<CharInfo> tree(_infos, 256, invalid);
+		LongType count = tree.GetRootNode()->_weight._count;  //统计根节点的次数
+
+		// 3. 读取压缩信息，根据重建的Huffman树解压缩
+		string compressfilename = filename;
+		compressfilename += ".Compress";
+		FILE* fOut = fopen(compressfilename.c_str(), "rb");
+		assert(fOut);
+
+		string uncompressfilename = filename;
+		uncompressfilename += ".Uncompress";
+		FILE*fIn = fopen(uncompressfilename.c_str(), "wb");  //c_str():将二进制码转换为c的字符串
+		assert(fIn);
+
+		HuffmanNode<CharInfo>* root = tree.GetRootNode();
+		HuffmanNode<CharInfo>* cur = root;
+
+		//int pos = 8;
+		char ch = fgetc(fOut);
+
+
+		int pos = 7;
+		while (!feof(fOut))
+		{
+			if (ch & (1 << pos))
+			{
+				cur = cur->_right;
+			}
+			else
+			{
+				cur = cur->_left;
+			}
+			if (pos-- == 0)
+			{
+				pos = 7;
+				ch = fgetc(fOut);          //继续读取字符
+			}
+			if (cur->_left == NULL&&cur->_right == NULL)
+			{
+				fputc(cur->_weight._ch, fIn);
+
+				if (--count == 0)
+				{
+					break;
+				}
+				cur = root;
+			}
+		}
+
+		cout << endl;
+
+		fclose(fIn);
+		fclose(fOut);
+		fclose(fOutConfig);
+	}
+protected:
+
+	void GenerateHuffmanCode(HuffmanNode<CharInfo>*root, string code) //生成huffman编码
+	{
+		if (root == NULL)
+		{
+			return;
+		}
+		if (root->_left)
+		{
+			GenerateHuffmanCode(root->_left, code + '0');
+		}
+		if (root->_right)
+		{
+			GenerateHuffmanCode(root->_right, code + '1');
+
+		}
+		if ((root->_left == NULL) && (root->_right == NULL))
+		{
+			_infos[root->_weight._ch]._code = code;  //？？？
+		}
+	}
+	//{
+	//	//回溯编码
+	//	if (root)
+	//	{
+	//		GenerateHuffmanCode(root->_left, code);
+	//		GenerateHuffmanCode(root->_right, code);
+	//		if (root->_left == NULL&&root->_right == NULL)
+	//		{
+	//			string& code = _infos[root->_weight._ch]._code;//code为引用对象的别名
+	//			HuffmanNode<CharInfo>* cur = root;
+	//			HuffmanNode<CharInfo>* parent = root->_parent;
+	//			while (parent)
+	//			{
+	//				if (parent->_left == cur)
+	//				{
+	//					code += '0';
+	//				}
+	//				else
+	//				{
+	//					code += '1';
+	//				}
+	//				cur = parent;
+	//				parent = cur->_parent;  //回溯
+	//			}
+	//			reverse(code.begin(), code.end());   //逆置保存（位图来实现保存）
+	//		}
+	//	}
+	//}
+
+
+	bool ReadLine(FILE* fOut, string& line)
+	{
+		assert(fOut);
+		char ch = fgetc(fOut);
+		if (feof(fOut))
+			return false;
+		while (ch != '\n'&&!feof(fOut))
+		{
+			line += ch;
+			ch = fgetc(fOut);
+		}
+		return true;
+
+	}
+protected:
+	CharInfo _infos[256];
+};
+
+
+
+
+”tst.cpp“
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+#pragma  once
+#include <iostream>
+using namespace std;
+#include "Compress.h"
+#include <time.h>
+
+
+void TestHuffmanTree()
+{
+
+	int a[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	HuffmanTree<int>tree(a, 10, 0);
+}
+void TestCompress()
+{
+
+	FileCompress<int> f;
+	double start_compress = clock();
+	//f.Compress("little");
+	f.Compress("Input.BIG");
+	double finish_compress = clock();
+	//f.UnCompress("little");
+	f.UnCompress("Input.BIG");
+	double finish_uncompress = clock();
+	cout << "压缩时间是：" << finish_compress - start_compress << "ms" << endl;
+	cout << "解压缩时间是：" << finish_uncompress - finish_compress << "ms" << endl;
+
+}
+
+
+
+int main()
+{
+
+	//TestHuffmanTree();
+	TestCompress();
+
+	system("pause");
+	return 0;
+}

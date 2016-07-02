@@ -4165,3 +4165,263 @@ int main()
 	system("pause");
 	return 0;
 }
+
+
+7-2
+
+#include <iostream>
+using namespace std;
+
+class Date
+{
+public:
+	Date()
+	{}
+	Date& operator=(const Date&d)
+	{
+		//1.判断自己给自己赋值  2.返回值需要一个引用，确保进行连续赋值 3.拷贝构造函数中必须使用&
+		if (this != &d)  
+		{
+			this->_year = d._year;
+			this->_month = d._month;
+			this->_day = d._day;
+		}
+		return  *this;
+	}
+private:
+	int _year;
+	int _month;
+	int _day;
+
+};
+void Test()
+{
+	Date d1;
+	Date d2(d1);  //调用拷贝构造函数
+
+	Date d3;
+	d3 = d1;  //调用赋值运算符构造函数
+}   
+
+int main()
+{
+	Test();
+	system("pause");
+	return 0;
+}
+
+
+
+
+class Array
+{
+public:
+	Array(int capacity)
+	{
+		_arr = (int *)malloc(sizeof(int)*capacity);
+		_capacity = capacity;
+		_size = 0;
+	}
+	~Array()
+	{
+		if (_arr)
+		{
+			free(_arr);
+			_arr = NULL;
+			_size = 0;
+			_capacity = 0;
+		}
+	}
+private:
+	int * _arr;
+	size_t _size;
+	int _capacity;
+};
+
+
+void Test()
+{
+
+	Array a1(10);
+	Array a2(a1);    //会有浅拷贝问题，程序崩溃，因为析构两次空间  ，利用深拷贝进行解决
+}
+
+
+class Date
+{
+public:
+	Date()
+	{
+		cout << "无参构造函数" << endl;
+	}
+	Date(const Date& d) //必须传引用，否则无穷递归
+	{
+		_year = d._year;
+		_month = d._month;
+		_day = d._day;  
+	}
+	~Date()
+	{
+		cout << "析构函数" << endl;
+	}
+private:
+	int _year;
+	int _month;
+	int _day;
+};
+void Test()
+{
+	Date d1;
+	Date d2(d1);  //调用拷贝构造函数
+	Date d3 = d1; //调用拷贝构造函数  与上等价
+}
+
+
+class Date
+{
+public:
+	////1.无参构造
+	//Date()
+	//{}
+	////2.带参构造
+	//Date(int year, int month, int day)
+	//{
+	//	_year = year;
+	//	_month = month;
+	//	_day = day;
+	//}
+
+     //3.带缺省参数的构造函数
+	Date(int year = 2000, int month = 1, int day = 1)
+	{
+		_year = year;
+		_month = month;
+		_day = day;
+	}
+	//半缺省参数是构造函数
+	Date(int year, int month = 1)
+	{
+		_year = year;
+		_month = month;
+		_day = 1;
+	}
+private:
+	int _year;
+	int _month;
+	int _day;
+};
+
+void Test()
+{
+	Date d1;  //调用无参构造函数
+	Date d2(2005, 1, 1);  //调用带参构造函数
+	//Date d3();    //  这里非法，没有调用d3 的构造函数定义出d3；
+	//cout << d1._year << "-" << d1._month << "-" << d1._day << endl;  //错误   成员变量为私有变量，不能在类外访问
+
+	
+}
+
+
+//类内定义
+//class Person
+//{
+//public:
+//	void Display()
+//	{
+//		cout << _name << "-" << _sex << "-" << _age << endl;
+//
+//	}
+//public:
+//	char* _name;
+//	char* _sex;
+//	int _age;
+//
+//};
+
+
+//类外定义
+class Person
+{
+public:
+	void Display();
+public:
+	char* _name;
+	char* _sex;
+	int _age;
+
+};
+
+ void Person::Display()
+{
+	 cout << _name << "-" << _sex << "-" << _age << endl;
+}
+
+void Test()
+{
+	Person p;
+	p._name = "jack";
+	p._sex = "男";
+	p._age = 10;
+
+	p.Display();
+
+	Person* ptr = &p;
+	ptr->_name = "peter";
+	ptr->_sex = "女";
+	ptr->_age = 13;
+
+	ptr->Display();
+
+
+}
+
+
+
+//全缺省
+int Add1(int a = 0, int b = 0)
+{
+	return a + b;
+
+}
+//半缺省
+int Add2(int a, int b = 0)
+{
+	return a + b;
+
+}
+void Test()
+{
+	int ret1 = Add1();
+	int ret2 = Add1(1);
+	int ret3 = Add1(1, 1);
+	int ret4 = Add2(2);
+	int ret5 = Add2(2, 2);
+	cout << "结果:" << ret1 << "-"<<ret2 <<"-"<< ret3 <<"-"<< ret4<<"-" << ret5<<"-" << endl;
+}
+int main()
+{
+	Test();
+	system("pause");
+	return 0;
+}
+int main()
+{
+	int i1 = 1;
+	double d1 = 2.22;
+	cout << "c++ type:" << "int->" << i1 << "double->" << d1 << endl;
+	cout << "please input int and double:";
+	cin >> i1 >> d1;
+	cout << "c++ type:" << "int->" << i1 << "double->" << d1 << endl;
+	system("pause");
+	return 0;
+
+}
+
+
+int main()
+{
+	std::cout << "hello world" << std::endl;
+	system("pause");
+	return 0;
+}
+

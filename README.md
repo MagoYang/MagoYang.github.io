@@ -4425,3 +4425,135 @@ int main()
 	return 0;
 }
 
+7-4
+
+
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+
+
+//传统写法
+class String
+{
+public:
+	String()
+		:_str(NULL)
+	{}
+	String(const char*str)
+		:_str(new char[strlen(str)+1])  //必须开空间，否则析构崩溃
+	{
+		strcpy(_str, str);
+	}
+	String(const String& s)
+		:_str(new char[strlen(s._str)+1])
+	{
+		strcpy(_str, s._str);
+	}
+	~String()
+	{
+		if (_str)
+		{
+			delete[] _str;
+		}
+
+	
+	}
+	String& operator=(const String&s)
+	{
+		if (this != &s)
+		{
+			/*delete[] _str;
+			_str = new char[strlen(s._str) + 1];
+			strcpy(_str, s._str);*/
+
+
+			char*tmp = new  char[strlen(s._str) + 1];  //预防开辟空间失败
+			strcpy(tmp, s._str);
+			delete[] _str;
+			_str = tmp;
+		}
+		return *this;
+	}
+	char *CStr()
+	{
+		return _str;
+	}
+
+private:
+	char* _str;
+
+};
+
+
+//现代写法
+class string
+{
+public:
+	string(const char*str="")
+		:_str(new char[strlen(str) + 1])  //必须开空间，否则析构崩溃
+	{
+		strcpy(_str, str);
+	}
+	string(const string& s)
+		:_str(null)
+	{
+		string tmp(s._str);
+		std::swap(_str, tmp._str);
+	}
+	~string()
+	{
+		if (_str)
+		{
+			delete[] _str;
+		}
+
+
+	}
+	string& operator=(const string&s)
+	{
+		if (this != &s)
+		{
+			string tmp(s._str);
+			std::swap(_str, tmp._str);
+		}
+		return *this;
+	}
+//  与上面等价
+//	string& operator=(string s)
+//	{
+//		swap(this->_str, s._str);
+//		return *this;
+//	}
+
+private:
+	char* _str;
+
+};
+
+void Test()
+{
+	String s1("ssssssssssssss");
+	String s2(s1);
+
+	String s3("xxxxxxx");
+	s3 = s1;
+
+	//String s4;
+	//String s5(s4);
+	cout << s1.CStr() << endl;
+	cout << s2.CStr() << endl;
+	cout << s3.CStr() << endl;
+
+}
+int main()
+{
+	Test();
+	system("pause");
+
+	return 0;
+}

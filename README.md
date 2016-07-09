@@ -4557,3 +4557,52 @@ int main()
 
 	return 0;
 }
+
+
+7-7
+
+
+
+#include <iostream>
+using namespace std;
+class A
+{
+public:
+	A(int n)
+	{
+		value = n;
+	}
+	A( A& x)
+	{
+		value = x.value;
+	}
+
+	void Print()
+	{
+		std::cout << value << std::endl;
+	}
+	//~A();
+
+private:
+	int value;
+
+};
+
+
+
+void Test()
+{
+	A a = 10;
+	A b = a;
+	b.Print();
+}
+int main()
+{
+	Test();
+	system("pause");
+	return 0;
+}
+
+
+
+

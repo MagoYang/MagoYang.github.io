@@ -4603,6 +4603,117 @@ int main()
 	return 0;
 }
 
+7-10
 
+
+ #include <iostream>
+using namespace std;
+
+
+
+int main()
+{
+	printf("hello c-world\n");
+	printf("****\n");
+	printf("*\n");
+	printf("*\n");
+	printf("****\n");
+	system("pause");
+	return 0;
+
+
+}
+
+//数字排序不重复
+int main()
+{
+	int i, j, k;
+	for (i = 1; i < 5; i++)
+	{
+		for (j = 1; j < 5; j++)
+		{
+			for (k = 1; k < 5; k++)
+			{
+				if ((i!=j)&&(j!=k)&&(k!=i))
+				{
+					int num = i * 100 + j * 10 +k;
+					printf("%d  ", num);
+
+					//printf("%d,%d,%d\n", i, j, k);
+				}
+			}
+		}
+	}
+	system("pause");
+	return 0;
+}
+ 
+bool Find(int* matrix, int rows, int cols, int number)  //rows行,  cols列, number,要找的数字
+{
+	//bool found = false;
+
+
+	if (matrix != NULL&&rows > 0 && cols > 0)
+	{
+		int row = 0;
+		int col = cols- 1;
+		while (row < rows && col > 0)
+		{
+			if (number == matrix[row*cols + col])
+			{
+				return true;
+				break;
+			}
+			else if (number < matrix[row*cols + col])
+			{
+				--col;
+			}
+			else // if (number>matrix[row*cols + col])
+			{
+				++row;
+			}
+		}
+	}
+	return false;
+
+}
+int main()
+{
+	int arr[4][4] = { { 1, 2, 8, 9 }, { 2, 4, 9, 12 }, { 4, 7, 10, 13 }, { 6, 8, 11, 15 } };
+	int ret1 = Find(*arr, 4, 4, 7);
+	int ret2 = Find(*arr, 4, 4, 5);
+	int ret3 = Find(*arr, 4, 4, 0);
+	int ret4 = Find(*arr, 4, 4, 20);
+	int ret5 = Find(arr[4], 4, 4, NULL);//传空指针相当于传0
+
+	cout << ret1 << "-" << ret2 << "-" << ret3 << "-" << ret4 << "-" << ret5 << endl;
+
+
+
+	system("pause");
+	return 0;
+}
+int GetSize(int arr[])
+{
+	return sizeof(arr);
+}
+int main()
+{
+	int arr1[] = { 1, 2,3, 4, 5 };
+	int size1 = sizeof(arr1);
+
+	int *arr2 = arr1;
+	int size2 = sizeof(arr2);
+
+	int size3 = GetSize(arr1);
+
+	//printf("%d,%d,%d", size1, size2, size3);  在c++中支持printf 输出，建议用cout
+	cout << size1 << size2 << size3 << endl;
+
+	system("pause");
+	return 0;
+}
+
+ 
 
 

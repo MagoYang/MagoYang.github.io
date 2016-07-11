@@ -4714,6 +4714,96 @@ int main()
 	return 0;
 }
 
+
+7-11
+
+
+
+
+#include <iostream>
+using namespace std;
+
+
+void ReplaceBlank(char string[], int len)   //string[]  字符数组  len   字符数组string的总容量
+{
+	if (string == NULL || len <= 0)
+	{
+		return;
+	}
+	int OLen = 0;
+	int BCount = 0;
+	int i = 0;
+	遍历计算字符串的原长及空格的数目
+	while (string[i] != '\0')
+	{
+		OLen++;
+		if (string[i] == ' ')
+		{
+			BCount++;
+		}
+
+		i++;
+	}
+	计算字符串新长度
+	int NewLen = BCount * 2 + OLen;
+	int IndexOLen = OLen;
+	int IndexNewLen = NewLen;
+	转换空格
+	while (IndexOLen >= 0 && IndexOLen < IndexNewLen)
+	{
+		if (string[IndexOLen] == ' ')
+		{
+			string[IndexNewLen--] = '0';
+			string[IndexNewLen--] = '2';
+			string[IndexNewLen--] = '%';
+		}
+		else
+		{
+			string[IndexNewLen--] = string[IndexOLen];
+		}
+		--IndexOLen;
+
+	}
+
+}
+
+int main()
+{
+	string  str= "we are happy.";
+	//int Lenstr = strlen(str) + 1;
+	//ReplaceBlank(str[14],);
+	system("pause");
+	return 0;
+}
+
+int main()
+{
+	char str1[] = "hello";
+	char str2[] = "hello";
+
+	char* str3 = "hello";
+	char* str4 = "hello";
+	
+	if (str1 == str2)
+	{
+		printf("str1 and str2 are same\n");
+	}
+	else
+	{
+		printf("str1 and str2 are not same\n");
+	}
+
+	if (str3 == str4)
+	{
+		printf("str3 and str4 are same\n");
+	}
+	else
+	{
+		printf("str3 and  str4 are not same\n");
+	}
+	system("pause");
+	return 0;
+}
  
 
 

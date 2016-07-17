@@ -4825,3 +4825,38 @@ int main()
  13     return 0;
  14 }
 ~            
+
+
+
+
+1 #include <stdio.h>                                                                                          
+  2 #include <signal.h>
+  3 #include <unistd.h>
+  4 
+  5 void printsigset(sigset_t *set){
+  6     int i=0;
+  7     for(;i<32;i++){
+  8         if(sigismember(set,i)){
+  9         putchar('1');
+ 10         }
+ 11         else{
+ 12         putchar('0');
+ 13         }
+ 14     }
+ 15     puts("");
+ 16 }
+ 17 int main()
+ 18 {
+ 19     sigset_t s,p;
+ 20     sigemptyset(&s);
+ 21     sigaddset(&s,SIGINT);
+ 22     sigprocmask(SIG_BLOCK,&s,NULL)
+ 23     while(1)
+ 24     {
+ 25         sigpending(&p);
+ 26         printsigset(&p);
+ 27         sleep(1);
+ 28     }
+ 29     return 0;
+ 30 }                                                                                                           
+        

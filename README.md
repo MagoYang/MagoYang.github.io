@@ -4807,3 +4807,21 @@ int main()
  
 
 
+7-17
+
+
+  1 #include <stdio.h>                                                                                          
+  2 #include <unistd.h>
+  3 
+  4 
+  5 int main()
+  6 {
+  7     int count =2;
+  8     alarm(1);
+  9     for(;1;count++)
+ 10     {
+ 11         printf("count = %d\n",count);
+ 12     }
+ 13     return 0;
+ 14 }
+~            

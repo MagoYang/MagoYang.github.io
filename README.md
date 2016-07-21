@@ -4858,5 +4858,160 @@ int main()
  27         sleep(1);
  28     }
  29     return 0;
- 30 }                                                                                                           
+ 30 }  
+ 
+ 
+ 
+ 
+ 7-21
+ #include <iostream>
+#include <string>
+using namespace  std;
+
+//异常的重新抛出
+//重新抛出异常得注意释放空间的运用，否则内存泄漏如：new等的运用
+
+class Exception
+{
+public:
+	Exception(int errId=0, const char* errMsg="")
+		:_errId(errId)
+		, _errMsg(errMsg)
+	{}
+
+	void What() const
+	{
+		cout << "errId" << _errId << endl;
+		cout << "errMsg" << _errMsg << endl;
+	}
+
+private:
+	int _errId;     //错误码
+	string _errMsg;  //错误信息
+
+};
+
+
+void Func1()
+{
+	throw string("Throw Func1 string");
+}
+void Func2()
+{
+	try
+	{
+		Func1();
+	}
+	catch (string& errMsg)
+	{
+		cout << errMsg << endl;
+		//throw;   错误的
+		//throw errMsg; 错误的
+
+		//throw Exception(1, "Rethrow Exception");
+
+		Exception e(1, "Rethrow Exception");
+		throw e;
+		
+	}
+}
+
+void Func()
+{
+	try
+	{
+		Func2();
+	}
+	catch (Exception& e)
+	{
+		e.What();
+	}
+}
+int main()
+{
+	Func();
+	system("pause");
+	return 0;
+}
+
+//
+////异常
+////即保证了在第一次catch后面的所有语句执行，并不一定会将每个的throw catch，除非只有catch（...）将catch一次，不论什么错误
+//class Exception
+//{
+//public:
+//	Exception(int errId, const char* errMsg)
+//		:_errId(errId)
+//		,_errMsg(errMsg)
+//	{}
+//
+//	void What() const
+//	{
+//		cout << "errId" << _errId << endl;
+//		cout << "errMsg" << _errMsg << endl;
+//	}
+//	
+//private:
+//	int _errId;     //错误码
+//	string _errMsg;  //错误信息
+//		
+//};
+//
+//
+//void Func1(bool isThrow)
+//{
+//	if (isThrow)
+//	{
+//		throw Exception(1, "抛出Exception对象");
+//	}
+//	printf("Func1(%d)\n", isThrow);
+//}
+//void Func2(bool isThrowString,bool isThrowInt)
+//{
+//	if (isThrowString)
+//	{
+//		throw string("抛出string对象");
+//	}
+//	if (isThrowInt)
+//	{
+//		throw 7;
+//	}
+//	printf("Func2(%d,%d)\n", isThrowString, isThrowInt);
+//}
+//void Func()
+//{
+//	try
+//	{
+//		Func1(true);
+//		Func2(false,true);
+//	}
+//	catch (const string& errMsg)  //catch  string
+//	{
+//		cout << "Catch string Obiect:" << errMsg << endl;
+//	}
+//	catch (const int& errId)  //catch   int
+//	{
+//		cout << "Catch int Obiect:" << errId << endl;
+//	}
+//
+//	catch (const Exception& e)     //
+//	{
+//		e.What();    //const Exception*  
+//	}
+//
+//	catch (...)  //未知异常
+//	{
+//		cout << "未知异常" << endl;
+//	}
+//	printf("Func()\n");
+//}
+//int main()
+//{
+//	Func();
+//	system("pause");
+//	return 0;
+//}
+
+
+
         

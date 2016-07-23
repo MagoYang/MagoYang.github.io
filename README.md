@@ -5012,6 +5012,178 @@ int main()
 //	return 0;
 //}
 
+7-23
+
+
+#include <stdio.h>
+
+判断大端小端    例如ox11 22 33 44； 内存中：
+大端：高字节放低地址，低字节放高地址（高低高低）11 22 33 44
+小端：高字节放高地址，低字节放低地址（高高低低）44 33 22 11
+
+1.用联合
+union UN
+{
+	int i;
+	char c;
+}un;
+int Check_sys()
+{
+	un.i = 1;
+	if (un.c == 1)
+		return 0;  //小端
+	else
+		return 1;  //大端
+}
+
+2.用int i=1；
+int Check_sys()
+{
+	int a = 1;
+	char* p = &a;
+	//char* p = (char*)&a;
+	if (*p == 1)
+	{
+		return 0; //小端
+	}
+	else
+	{
+		return 1;//大端
+	}
+}
+
+int main()
+{
+	int ret = Check_sys();
+	if (ret == 0)
+	{
+		printf("little\n");
+	}
+	else
+	{
+		printf("big\n");
+	}
+	system("pause");
+	return 0;
+}
+
+
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include <iostream>
+#include <string.h>
+using namespace std;
+
+
+ 
+
+//string 的现代写法
+class string
+{
+public:
+	string(char* str="")
+		:_str(new char[strlen(str) + 1])
+	{
+		strcpy(_str, str);
+	}
+	string(const string& s)
+		:_str(null)
+	{
+		string tmp(s._str);
+		std::swap(_str, (char*)s._str);
+
+	}
+	string& operator=(const string& s)
+	{
+		if (this != &s)
+		{
+			string tmp(s._str);
+			std::swap(_str, (char*)s._str);
+		}
+		return *this;
+	}
+
+	~string()
+	{
+		if (_str)
+		{
+			delete[] _str;
+		}
+	}
+
+private:
+	char* _str;     //字符串
+	
+
+};
+
+
+//写时拷贝+引用计数
+//普通的引用计数、静态引用计数都有问题
+//用引用计数指针
+class String
+{
+public:
+	String(char* str = "")
+		:_str(new char[strlen(str) + 1])
+		,_pRefCount(new int(1))
+	{
+		strcpy(_str, str);
+	}
+	String(const String& s)
+		:_str(s._str)
+		,_pRefCount(s._pRefCount)
+	{
+		++(*_pRefCount);
+	}
+	/*String& operator=(const String& s)
+	{
+		if (this != &s)
+		{
+			_str = s._str;
+			_pRefCount = s._pRefCount;
+		}
+		return *this;
+	}*/        //有影响 对s4
+
+	~String()
+	{
+		if (--(*_pRefCount)==0)
+		{
+			delete[] _str;
+			delete _pRefCount;
+		}
+	}
+
+private:
+	char* _str;     //字符串
+	int* _pRefCount;  //引用计数指针
+
+};
+
+void Test1()
+{
+	String  s1("xxxxxxxxxxxx");
+	String  s2(s1);
+
+	String  s3("ssssssssssssssss");
+	String  s4(s3);
+
+	String s5;
+	s5 = s4;
+}
+
+
+int main()
+{
+
+	Test1();
+	system("pause");
+	return 0;
+}
+
+
 
 
         

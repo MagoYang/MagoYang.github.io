@@ -5186,4 +5186,70 @@ int main()
 
 
 
-        
+     
+7-25
+
+#define _CRT_SECURE_NO_WARNINGS 1
+#include <stdio.h>
+#include <string.h>
+#include <windows.h>
+
+
+//从两边聚集中间打印字符串
+int main()
+{
+	int i = 0;
+	char arr1[] = "welcome to bit!";
+	char arr2[] = "###############";
+	int size = strlen(arr1);
+	int left = 0;
+	int right = size - 1;
+	for (i = 0; i < (size + 1) / 2; i++)
+	{
+		arr2[left] = arr1[left];
+		arr2[right] = arr1[right];
+		left++;
+		right--;
+		Sleep(1000);
+		printf("%s\n", arr2);
+	}
+
+	system("pause");
+	return 0;
+}
+
+
+//模拟用户密码登录
+//int main()
+//{
+//	int i = 0;
+//	char input[10];
+//	for (i = 0; i < 3; i++)
+//	{
+//		printf("请输入密码：\n");
+//		scanf("%s", input);
+//		if (strcmp("12345",input) == 0)
+//		{
+//			printf("登陆成功！\n");
+//
+//			break;
+//		}
+//		else
+//		{
+//			printf("密码错误！再次输入：");
+//		}
+//	}
+//	if (i == 3)
+//	{
+//		return 0;
+//	}
+//	printf("取钱成功！\n");
+//	system("pause");
+//	return 0;
+//}
+
+
+
+
+
+ 

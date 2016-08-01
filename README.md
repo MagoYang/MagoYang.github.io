@@ -5251,5 +5251,160 @@ int main()
 
 
 
+epoll_server
+
+  #include <stdio.h>                                                                                                                
+  2 #include <stdlib.h>
+  3 #include <string.h>
+  4 #include <unistd.h>
+  5 #include <fcntl.h>
+  6 #include <sys/socket.h>
+  7 #include <netinet/in.h>
+  8 #include <sys/epoll.h>
+  9 
+ 10 
+ 11 
+ 12 static int startup(const char*_ip,int _port)
+ 13 {
+ 14     int sock=socket(AF_INET,SOCK_STREAM,0);
+ 15     if(sock<0)
+ 16     {
+ 17         perror("socket");
+ 18         exit(2);
+ 19     }
+ 20     struct sockaddr_in local;
+ 21     local.sin_family=AF_INET;
+ 22     local.sin_port=htons(_port);
+ 23     local.sin_addr.s_addr=inet_addr(_ip);
+ 24 
+ 25     if(bind(sock,(struct sockaddr*)&local,sizeof(local))<0)
+ 26     {
+ 27         perror("bind");
+ 28         exit(3);
+ 29     }
+ 30     if(listen(sock,5)<0)
+ 31     {
+ 32         perror("listen");
+ 33         exit(4);
+ 34     }  
+ 35     return sock;
+ 36 }
+ 37 
+ 38 static int set_noblock(int sock)
+ 39 {
+ 40     int fl=fcntl(sock,F_GETFL);
+ 41     return fcntl(sock,F_SETFL,fl | O_NONBLOCK);
+ 42 }
+ 43 static void usage(const char*proc)
+ 44 {
+ 45     printf("Usage: %s [ip] [port]\n",proc);
+ 46 }
+ 47 int main(int argc,char *argv[])
+ 48 {
+ 49     if(argc!=3)
+ 50     {
+ 51         usage(argv[0]);
+ 52         exit(1);
+ 53     }
+ 54     //create listen socket
+ 55     int listen_sock=startup(argv[1],atoi(argv[2]));
+ 56     int epfd=epoll_create(256);
+ 57     if(epfd<0)
+ 58     {
+ 59         perror("epoll_create");
+ 60         exit(5);
+ 61     }
+ 62     
+ 63     struct epoll_event _ev;
+ 64     _ev.events=EPOLLIN;
+ 65     _ev.data.fd=listen_sock;
+ 66  epoll_ctl(epfd,EPOLL_CTL_ADD,listen_sock,&_ev);
+ 68 
+ 69     struct epoll_event _ready_ev[128];
+ 70     int _ready_evs=128;
+ 71     int _timeout=-1;  //block
+ 72 
+ 73     int nums=0;
+ 74     int done=0;
+ 75     while(!done)
+ 76     {
+ 77         switch(nums=epoll_wait(epfd,_ready_ev,_ready_evs,_timeout))
+ 78         {
+ 79             case 0:
+ 80               printf("timeout...\n");
+ 81               break;
+ 82             case -1:
+ 83                 perror("epoll_wait");
+ 84                 break;
+ 85             default:
+ 86                 {
+ 87                     int i=0;
+ 88                     for(;i<nums;i++)
+ 89                     {
+ 90                         int _fd= _ready_ev[i].data.fd;
+ 91                         if(_fd==listen_sock&&_ready_ev[i].events & EPOLLIN)
+ 92                         {
+ 93                             //get a new link...
+ 94                             struct sockaddr_in peer;
+ 95                             socklen_t len=sizeof(peer);
+ 96                             int new_sock=accept(listen_sock,(struct sockaddr*)&peer,&len);
+ 97                             if(new_sock>0)
+ 98                             {
+ 99                                 printf("client info,socket:%s:%d\n",\
+100                                        inet_ntoa(peer.sin_addr),ntohs(peer.sin_port));                                        
+101                                 _ev.events=EPOLLIN | EPOLLET;  //ET
+102                                 _ev.data.fd=new_sock;
+103                                 set_noblock(new_sock);
+104 
+105                                 epoll_ctl(epfd,EPOLL_CTL_ADD,new_sock,&_ev);
+106                             }
+107                         }
+108                         else
+109                         {
+110                             if(_ready_ev[i].events & EPOLLIN)
+111                             {
+112                                 char buf[12400];
+113                                 memset(buf,'\0',sizeof(buf));
+114                                 
+115                                 //read/write
+116                                 ssize_t _s=recv(_fd,buf,sizeof(buf)-1,0);//while need recv done...
+117 
+118                                 if(_s>0)
+119                                 {
+120                                     printf("client# %s\n",buf);
+121                                     _ev.events=EPOLLOUT | EPOLLET;
+122                                     _ev.data.fd=_fd;
+123                                     epoll_ctl(epfd,EPOLL_CTL_MOD,_fd,&_ev);
+124                                 }
+125                                 else if(_s==0)
+126                                 {
+127                                     printf("client close...\n");
+128                                     epoll_ctl(epfd,EPOLL_CTL_DEL,_fd,NULL);
+129                                     close(_fd);
+130                                 }
+131                                 else
+132                                 {
+133                                     perror("recv");  
+                            	    }
+135                             }
+136                             else if(_ready_ev[i].events &EPOLLOUT)
+137                            {
+138                                 const char*msg="HTTP/1.1 200 OK\r\n\r\n<h1>hello world =_=||</h1>\r\n";
+139                                 send(_fd,msg,strlen(msg),0);
+140                                 epoll_ctl(epfd,EPOLL_CTL_DEL,_fd,NULL);
+141                                 close(_fd);
+142                             }
+143                         }
+144                     }
+145                 }
+146                 break;
+147         }
+148     }
+149 
+150 }  
+                      
+
+                                                                                                                    33,1-4        27%
 
  
+                       

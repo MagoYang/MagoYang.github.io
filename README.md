@@ -5404,7 +5404,144 @@ epoll_server
 150 }  
                       
 
-                                                                                                                    33,1-4        27%
+  8-7
+  
+  
+  #include <iostream>
+using namespace std;
+
+//c语言
+//非递归
+
+int bsearchWithoutRecursion(int array[], int low, int high, int target)
+{
+	while (low <= high)
+	{
+		int mid = (low + high) / 2;
+		if (array[mid]>target)
+			high = mid - 1;
+		else if(array[mid]<target)
+			low = mid + 1;
+		else//findthetarget
+			return mid;
+	}
+	//the array does not contain the target
+	return-1;
+}
+
+
+//递归
+int binary_search(const int arr[], int low, int high, int key)
+{
+	int mid = low + (high - low) / 2;
+	if (low>high)
+		return -1;
+	else{
+		if (arr[mid] == key)
+			return mid;
+		else if (arr[mid]>key)
+			return binary_search(arr, low, mid - 1, key);
+		else
+			return binary_search(arr, mid + 1, high, key);
+	}
+}
+
+
+//c++
+int binSearch(const int *Array, int start, int end, int key)
+{
+	int left, right;
+	int mid;
+	left = start;
+	right = end;
+	//注释中为递归算法，执行效率低，不推荐
+	/*
+	if(key<Array[mid])
+	{
+	return(binSearch(Array,left,mid,key));
+	}
+	else if(key>Array[mid])
+	{
+	return(binSearch(Array,mid+1,right,key));
+	}
+	else
+	return mid;
+	*/
+
+	while (left <= right)
+	{
+		mid = (left + right) / 2;
+		if (key == Array[mid])  return mid;
+		else if (key<Array[mid]) right = mid - 1;
+		else if (key>Array[mid ]) left = mid + 1;
+	}
+	return -1;
+	//找不到就返回-1
+}
+ 
+
+struct BinaryTreeNode
+{
+	int _value;
+	BinaryTreeNode* _left;
+	BinaryTreeNode* _right;
+};
+int TreeDepth(BinaryTreeNode* pRoot)
+{
+	if (pRoot == NULL)
+	{
+		return 0;
+	}
+	int nleft = TreeDepth(pRoot->_left);
+	int nright = TreeDepth(pRoot->_right);
+
+	return (nleft>nright)?(nleft+1):(nright+1);
+}
+
+//回文数的测试代码
+int main()
+{
+	int i = 0, k = 12321, p, a[10], tmp, begin, end;
+	cout << "please input number:>"<<endl;
+	cin >> k;
+	p = k;
+	while (p)
+	{
+		tmp = p % 10;
+		a[i] = tmp;
+		p = p / 10;
+		++i;
+	}
+	 begin = 0;
+	 end = i-1;
+	 while (begin < end)
+	 {
+		 if (a[begin] != a[end])
+		 {
+			 break;
+		 }
+		 else
+		 {
+			 begin++;
+			 end--;
+		 }
+	 }
+	 if (begin < end)
+	 {
+		 cout << "假的"<<endl;
+	 }
+	 else
+	 {
+		 cout << "真的" << endl;
+	 }
+	 cout << "i" << i << endl;
+	 cout << k<<endl;
+
+	system("pause"); 
+	return 0;
+}
+
+33,1-4        27%
 
  
                        

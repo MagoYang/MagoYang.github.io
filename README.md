@@ -5545,3 +5545,85 @@ int main()
 
  
                        
+8-16#include <iostream>                                                         
+  2 #include <sys/socket.h>
+  3 #include <sys/types.h>
+  4 #include <string.h>
+  5 #include <arpa/inet.h>
+  6 
+  7 class server{
+  8     public:
+  9         server()
+ 10         {
+ 11             sock_fd=-1;
+ 12             port=8080;
+ 13             ip="192.168.0.114";
+ 14         }
+ 15 
+ 16         int server_init()
+ 17         {
+ 18             sock_fd=socket(AF_INET,SOCK_DGRAM,0);
+ 19             if(sock_fd==-1)
+ 20             {   
+ 21                 return 1;
+ 22             }
+ 23             print_log("creat socket success");
+24             struct sockaddr_in server_sock;
+ 25             bzero(&server_sock,sizeof(server_sock));
+ 26             server_sock.sin_family=AF_INET;
+ 27             server_sock.sin port=htons(port);
+ 28             server_sock.sin_addr.s_addr=htonl(INADOR_ANY);
+ 29             socklen_t len=sizeof(sockaddr_in);
+ 30             if(bind(sock_fd,(struct sockaddr*)&server_sock,len)==-1)
+ 31             {
+ 32                 return 2;   
+ 33             }
+ 34             print_log("bind socket success");
+ 35             return 0;
+ 36         }
+ 37 
+ 38         void get_msg(std::string &msg)
+ 39         {
+ 40             char buf[1024];                                                 
+ 41             memset(buf,'\0',sizeof(buf));
+ 42             struct sockaddr_in cli;
+ 43             socklen_t len-sizeof(struct sockaddr_in);
+    int ret=recvfrom(sock_fd,buf,sizeof(buf)-1,0,(struct sockaddr*)&    cli,&len);
+ 45             if(ret!=-1){
+ 46             print_log("get  msg success");
+ 47             msg=buf;
+ 48             std::cout<< "client ip is: "<< inet_ntoa(cli.sin_addr)<<std::end    l;
+ 49             }else{
+ 50                 msg="";
+ 51             }
+ 52         }
+ 53 
+ 54         void send_msg()
+ 55         {
+ 56             //do nothing
+ 57         }
+ 58 
+ 59         ~server()
+ 60         {
+ 61             close(sock_fd);   
+ 
+  62         }
+ 63 
+ 64     private:
+ 65         int sock_fd;
+ 66         std::string ip;
+ 67         short int port;
+ 68 };
+ 69 
+ 70 
+ 71 int  main()
+ 72 {
+ 73     server ser;
+ 74     ser.server_init();
+ 75     std::string msg;
+ 76     while(1){
+ 77         ser.get_msg(msg);
+ 78         std::cout<<msg<<std::endl;
+ 79     }
+ 80     return 0;
+ 81 }        
